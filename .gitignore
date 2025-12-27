@@ -1,0 +1,17 @@
+# dependencies
+node_modules/
+
+# environment variables
+.env
+
+# build output
+dist/
+build/
+
+# logs
+logs/
+*.log
+
+# tests
+coverage/
+
