@@ -1,4 +1,4 @@
-import { auth } from "@/app/api/auth/[...nextauth]/route";
+import { auth } from "@/auth";
 import { createServerClient } from "@/lib/supabase/server";
 import { DashboardClient } from "./components/DashboardClient";
 import { ExpiredItemsBanner } from "./components/ExpiredItemsBanner";

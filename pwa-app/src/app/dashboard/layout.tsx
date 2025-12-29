@@ -1,4 +1,4 @@
-import { auth } from "@/app/api/auth/[...nextauth]/route";
+import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { NavDropdown } from "./components/NavDropdown";
 import { UserMenu } from "./components/UserMenu";
