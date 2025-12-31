@@ -1,5 +1,4 @@
-import { auth } from "@/auth";
-import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/auth";
 import { NavDropdown } from "./components/NavDropdown";
 import { UserMenu } from "./components/UserMenu";
 
@@ -8,11 +7,8 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth();
-
-  if (!session) {
-    redirect("/");
-  }
+  // Middleware already protects this route, just get user data
+  const user = await getCurrentUser();
 
   return (
     <div className="min-h-screen bg-(--bg)">
@@ -21,10 +17,12 @@ export default async function DashboardLayout({
         <div className="section-shell flex items-center justify-end gap-4 py-4">
           <NavDropdown />
 
-          <UserMenu
-            name={session.user?.name || "User"}
-            email={session.user?.email || ""}
-          />
+          {user && (
+            <UserMenu
+              name={user.user_metadata?.name || "User"}
+              email={user.email || ""}
+            />
+          )}
         </div>
       </header>
 

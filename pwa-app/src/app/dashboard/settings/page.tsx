@@ -1,11 +1,12 @@
-import { auth } from "@/app/api/auth/[...nextauth]/route";
+import { getCurrentUser } from "@/lib/auth";
 import { SettingsClient } from "./components/SettingsClient";
 
 export default async function SettingsPage() {
-  const session = await auth();
+  // Middleware already protects this route, just get user data
+  const user = await getCurrentUser();
 
-  if (!session?.user) {
-    return null;
+  if (!user) {
+    return null; // Should never happen due to middleware
   }
 
   return (
@@ -19,9 +20,9 @@ export default async function SettingsPage() {
 
       <SettingsClient
         user={{
-          name: session.user.name || null,
-          email: session.user.email || null,
-          image: session.user.image || null,
+          name: user.user_metadata?.name || null,
+          email: user.email || null,
+          image: user.user_metadata?.avatar_url || null,
         }}
       />
     </div>

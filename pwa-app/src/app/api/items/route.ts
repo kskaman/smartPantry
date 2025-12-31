@@ -1,15 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/app/api/auth/[...nextauth]/route";
+import { getApiUser } from "@/lib/auth";
 import { createServerClient } from "@/lib/supabase/server";
 import { ItemInsert } from "@/types/database";
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth();
-
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const { user, error: authError } = await getApiUser();
+    if (authError) return authError;
 
     const body: ItemInsert = await request.json();
 
@@ -24,7 +21,7 @@ export async function POST(request: NextRequest) {
     // Ensure user_id matches session
     const itemData: ItemInsert = {
       ...body,
-      user_id: session.user.id,
+      user_id: user.id,
       quantity: body.quantity || 1,
     };
 
@@ -54,11 +51,8 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth();
-
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const { user, error: authError } = await getApiUser();
+    if (authError) return authError;
 
     const supabase = await createServerClient();
     const { searchParams } = new URL(request.url);
@@ -67,7 +61,7 @@ export async function GET(request: NextRequest) {
     let query = supabase
       .from("items")
       .select("*")
-      .eq("user_id", session.user.id)
+      .eq("user_id", user.id)
       .order("expiry_date", { ascending: true, nullsFirst: false })
       .order("created_at", { ascending: false });
 

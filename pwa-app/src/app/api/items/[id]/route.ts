@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/app/api/auth/[...nextauth]/route";
+import { getApiUser } from "@/lib/auth";
 import { createServerClient } from "@/lib/supabase/server";
 import { ItemUpdate } from "@/types/database";
 
@@ -8,11 +8,8 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await auth();
-
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const { user, error: authError } = await getApiUser();
+    if (authError) return authError;
 
     const { id } = await params;
     const body: ItemUpdate = await request.json();
@@ -30,7 +27,7 @@ export async function PATCH(
       return NextResponse.json({ error: "Item not found" }, { status: 404 });
     }
 
-    if (existingItem.user_id !== session.user.id) {
+    if (existingItem.user_id !== user.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
@@ -39,7 +36,7 @@ export async function PATCH(
       .from("items")
       .update(body)
       .eq("id", id)
-      .eq("user_id", session.user.id)
+      .eq("user_id", user.id)
       .select()
       .single();
 
@@ -52,8 +49,7 @@ export async function PATCH(
     }
 
     return NextResponse.json(data);
-  } catch (error) {
-    console.error("API error:", error);
+  } catch {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -66,11 +62,8 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await auth();
-
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const { user, error: authError } = await getApiUser();
+    if (authError) return authError;
 
     const { id } = await params;
 
@@ -87,7 +80,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Item not found" }, { status: 404 });
     }
 
-    if (existingItem.user_id !== session.user.id) {
+    if (existingItem.user_id !== user.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
@@ -96,7 +89,7 @@ export async function DELETE(
       .from("items")
       .delete()
       .eq("id", id)
-      .eq("user_id", session.user.id);
+      .eq("user_id", user.id);
 
     if (error) {
       console.error("Supabase error:", error);
@@ -107,12 +100,10 @@ export async function DELETE(
     }
 
     return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("API error:", error);
+  } catch {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
     );
   }
 }
-

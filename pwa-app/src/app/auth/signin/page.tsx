@@ -1,32 +1,16 @@
-import { signIn } from "@/app/api/auth/[...nextauth]/route";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { SignInButton } from "@/app/components/SignInButton";
 
 export default function SignInPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-amber-50 p-4">
-      <div className="w-full max-w-md">
+    <div className="main-page">
+      <div className="w-full max-w-md flex items-center justify-center flex-col">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-amber-600 bg-clip-text text-transparent"></h1>
           <p className="text-muted-foreground">
             Track your pantry, reduce waste, cook what you have
           </p>
         </div>
 
-        <form
-          action={async () => {
-            "use server";
-            await signIn("google", { redirectTo: "/dashboard" });
-          }}
-        >
-          <Button
-            type="submit"
-            className="w-full h-12 text-base"
-            variant="outline"
-          >
-            Sign in with Google
-          </Button>
-        </form>
+        <SignInButton />
       </div>
     </div>
   );

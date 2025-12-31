@@ -1,22 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/app/api/auth/[...nextauth]/route";
 import { createServerClient } from "@/lib/supabase/server";
 import { UserSettingsUpdate } from "@/types/settings";
+import { getApiUser } from "@/lib/auth";
 
 export async function GET() {
   try {
-    const session = await auth();
-
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const { user, error: authError } = await getApiUser();
+    if (authError) return authError;
 
     const supabase = await createServerClient();
 
     const { data, error } = await supabase
       .from("user_settings")
       .select("*")
-      .eq("user_id", session.user.id)
+      .eq("user_id", user.id)
       .single();
 
     if (error && error.code !== "PGRST116") {
@@ -31,7 +28,7 @@ export async function GET() {
     // If no settings exist, return defaults
     if (!data) {
       return NextResponse.json({
-        user_id: session.user.id,
+        user_id: user.id,
         expiry_alert_days: 2,
         email_notifications: true,
       });
@@ -49,11 +46,8 @@ export async function GET() {
 
 export async function PATCH(request: NextRequest) {
   try {
-    const session = await auth();
-
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const { user, error: authError } = await getApiUser();
+    if (authError) return authError;
 
     const body: UserSettingsUpdate = await request.json();
 
@@ -63,7 +57,7 @@ export async function PATCH(request: NextRequest) {
     const { data: existing } = await supabase
       .from("user_settings")
       .select("id")
-      .eq("user_id", session.user.id)
+      .eq("user_id", user.id)
       .single();
 
     let result;
@@ -73,7 +67,7 @@ export async function PATCH(request: NextRequest) {
       const { data, error } = await supabase
         .from("user_settings")
         .update(body)
-        .eq("user_id", session.user.id)
+        .eq("user_id", user.id)
         .select()
         .single();
 
@@ -92,7 +86,7 @@ export async function PATCH(request: NextRequest) {
         .from("user_settings")
         .insert([
           {
-            user_id: session.user.id,
+            user_id: user.id,
             expiry_alert_days: body.expiry_alert_days ?? 2,
             email_notifications: body.email_notifications ?? true,
           },
@@ -120,4 +114,3 @@ export async function PATCH(request: NextRequest) {
     );
   }
 }
-

@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { ChevronDown, Settings, LogOut } from "lucide-react";
-import { signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { supabase } from "@/lib/supabase/client";
 
 interface UserMenuProps {
   name: string;
@@ -52,7 +52,11 @@ export function UserMenu({ name, email }: UserMenuProps) {
           <span>Settings</span>
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={() => signOut({ callbackUrl: "/" })}
+          onClick={async () => {
+            await supabase.auth.signOut();
+            router.push("/auth/signin");
+            router.refresh();
+          }}
           className="text-destructive focus:text-destructive"
         >
           <LogOut className="mr-2 h-4 w-4" />

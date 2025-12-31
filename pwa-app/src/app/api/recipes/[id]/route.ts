@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/app/api/auth/[...nextauth]/route";
 import {
   SpoonacularRecipeDetail,
   RecipeDetail,
   SpoonacularAnalyzedInstruction,
 } from "@/types/recipes";
+import { getApiUser } from "@/lib/auth";
 
 const API_BASE = "https://api.spoonacular.com/recipes";
 const API_KEY = process.env.SPOONACULAR_API_KEY;
@@ -93,11 +93,8 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await auth();
-
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const { error: authError } = await getApiUser();
+    if (authError) return authError;
 
     const { id } = await params;
 

@@ -1,20 +1,21 @@
-import { auth } from "@/app/api/auth/[...nextauth]/route";
 import { createServerClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/auth";
 import { InventoryClient } from "./components/InventoryClient";
 import { ExpiredItemsBanner } from "../components/ExpiredItemsBanner";
 
 export default async function InventoryPage() {
-  const session = await auth();
+  // Middleware already protects this route, just get user data
+  const user = await getCurrentUser();
 
-  if (!session?.user?.id) {
-    return null;
+  if (!user) {
+    return null; // Should never happen due to middleware
   }
 
   const supabase = await createServerClient();
   const { data: items } = await supabase
     .from("items")
     .select("*")
-    .eq("user_id", session.user.id)
+    .eq("user_id", user.id)
     .order("expiry_date", { ascending: true, nullsFirst: false })
     .order("created_at", { ascending: false });
 
@@ -29,7 +30,7 @@ export default async function InventoryPage() {
 
       <ExpiredItemsBanner items={items || []} showDeleteButton={false} />
 
-      <InventoryClient userId={session.user.id} initialItems={items || []} />
+      <InventoryClient userId={user.id} initialItems={items || []} />
     </div>
   );
 }

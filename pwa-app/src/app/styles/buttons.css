@@ -1,0 +1,106 @@
+/* button.css */
+
+/* =========================
+   Base button
+   ========================= */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+/* =========================
+   Regular button shape
+   ========================= */
+.btn--regular {
+  border-radius: 12px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* =========================
+   Active / focus ring
+   ========================= */
+.btn--interactive:focus-visible {
+  outline: none;
+}
+
+.btn--interactive:active {
+  box-shadow: 0 0 0 2px var(--btn-inner-shadow-color),
+    0 0 0 4px var(--btn-outer-shadow-color);
+}
+
+/* =========================
+   Disabled
+   ========================= */
+.btn--disabled {
+  background: var(--btn-disabled-bg);
+  color: var(--btn-disabled-text);
+  border: none;
+  cursor: not-allowed;
+}
+
+/* =========================
+   Variants
+   ========================= */
+
+/* PRIMARY */
+.btn-primary {
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  border: none;
+}
+
+.btn-primary:active {
+  background: var(--btn-primary-active-bg);
+}
+
+/* SECONDARY */
+.btn-secondary {
+  background: var(--btn-secondary-bg);
+  color: var(--btn-secondary-text);
+  border: 1px solid var(--btn-secondary-border);
+}
+
+.btn-secondary:active {
+  background: var(--btn-secondary-active-bg);
+  color: var(--btn-secondary-active-text);
+  border-color: var(--btn-secondary-active-border);
+}
+
+/* OUTLINE */
+.btn-outline {
+  background: var(--btn-outlined-bg);
+  color: var(--btn-outlined-text);
+  border: 1px solid var(--btn-outlined-border);
+}
+
+.btn-outline:active {
+  background: var(--btn-outlined-active-bg);
+  color: var(--btn-outlined-active-text);
+  border-color: var(--btn-outlined-active-border);
+}
+
+/* WARNING */
+.btn-warning {
+  background: var(--btn-warning-bg);
+  color: var(--btn-warning-text);
+  border: none;
+}
+
+.btn-warning:active {
+  background: var(--btn-warning-active-bg);
+}
+
+/* TEXT */
+.btn-text {
+  background: transparent;
+  padding: 4px;
+}
+
+/* ICON */
+.btn-icon {
+  background: transparent;
+  padding: 4px;
+}

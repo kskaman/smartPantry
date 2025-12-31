@@ -1,5 +1,5 @@
-import { auth } from "@/auth";
 import { createServerClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/auth";
 import { DashboardClient } from "./components/DashboardClient";
 import { ExpiredItemsBanner } from "./components/ExpiredItemsBanner";
 import { Card, CardContent } from "@/components/ui/card";
@@ -7,18 +7,20 @@ import { Badge } from "@/components/ui/badge";
 import { getExpiryStats } from "@/lib/expiry-utils";
 
 export default async function Dashboard() {
-  const session = await auth();
-
-  if (!session?.user?.id) {
-    return null;
+  // Middleware already protects this route, just get user data
+  const user = await getCurrentUser();
+  
+  if (!user) {
+    return null; // Should never happen due to middleware
   }
 
-  // Fetch stats from database
   const supabase = await createServerClient();
+
+  // Fetch stats from database
   const { data: items } = await supabase
     .from("items")
     .select("*")
-    .eq("user_id", session.user.id);
+    .eq("user_id", user.id);
 
   const totalItems = items?.length || 0;
   const expiryStats = getExpiryStats(items || []);
@@ -28,7 +30,7 @@ export default async function Dashboard() {
       <div className="mb-8">
         <h1 className="text-4xl font-semibold mb-2">Dashboard</h1>
         <p className="text-muted-foreground">
-          Welcome back, {session?.user?.name}!
+          Welcome back, {user.user_metadata?.name || user.email}!
         </p>
       </div>
 
@@ -90,7 +92,7 @@ export default async function Dashboard() {
 
       {/* Quick Actions */}
       <DashboardClient
-        userId={session.user.id}
+        userId={user.id}
         recentItems={items?.slice(0, 5) || []}
       />
     </div>

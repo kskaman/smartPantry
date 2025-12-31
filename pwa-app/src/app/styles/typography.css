@@ -1,0 +1,57 @@
+@layer components {
+  /* 24px / 120% / -0.5px / bold */
+  .text-preset-1 {
+    font-size: 24px;
+    line-height: 120%;
+    letter-spacing: -0.5px;
+    font-weight: 700; /* bold */
+  }
+
+  /* 20px / 120% / -0.5px / bold */
+  .text-preset-2 {
+    font-size: 20px;
+    line-height: 120%;
+    letter-spacing: -0.5px;
+    font-weight: 700; /* bold */
+  }
+
+  /* 16px / 120% / -0.3px / semibold */
+  .text-preset-3 {
+    font-size: 16px;
+    line-height: 120%;
+    letter-spacing: -0.3px;
+    font-weight: 600; /* semibold */
+  }
+
+  /* 14px / 120% / -0.2px / medium */
+  .text-preset-4 {
+    font-size: 14px;
+    line-height: 120%;
+    letter-spacing: -0.2px;
+    font-weight: 500; /* medium */
+  }
+
+  /* 14px / 120% / -0.2px / regular */
+  .text-preset-5 {
+    font-size: 14px;
+    line-height: 120%;
+    letter-spacing: -0.2px;
+    font-weight: 400; /* regular */
+  }
+
+  /* 12px / 120% / -0.2px / regular */
+  .text-preset-6 {
+    font-size: 12px;
+    line-height: 120%;
+    letter-spacing: -0.2px;
+    font-weight: 400; /* regular */
+  }
+
+  /* 12px / 140% / 0px / regular */
+  .text-preset-7 {
+    font-size: 12px;
+    line-height: 140%;
+    letter-spacing: 0px;
+    font-weight: 400; /* regular */
+  }
+}

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/app/api/auth/[...nextauth]/route";
 import { getRecipeNameSuggestions } from "@/lib/spoonacular";
+import { getApiUser } from "@/lib/auth";
 
 /**
  * GET /api/recipes/search/autocomplete
@@ -12,11 +12,8 @@ import { getRecipeNameSuggestions } from "@/lib/spoonacular";
  */
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth();
-
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const { error: authError } = await getApiUser();
+    if (authError) return authError;
 
     // Get query parameters
     const { searchParams } = new URL(request.url);
