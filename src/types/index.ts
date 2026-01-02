@@ -22,7 +22,6 @@ export type { UserSettings, UserSettingsUpdate } from "./settings";
 export type {
   BaseComponentProps,
   InteractiveProps,
-  ButtonProps,
   BaseInputProps,
   TextInputProps,
   PasswordInputProps,
