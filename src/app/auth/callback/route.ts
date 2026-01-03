@@ -12,11 +12,8 @@ export async function GET(request: Request) {
 
   if (code) {
     const cookieStore = await cookies();
-    
-    // Create the redirect response
-    const response = NextResponse.redirect(new URL(next, baseUrl));
-    
-    // Create Supabase client with cookie handling that writes to response
+
+    // Create Supabase client with cookie handling
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -26,25 +23,27 @@ export async function GET(request: Request) {
             return cookieStore.getAll();
           },
           setAll(cookiesToSet) {
-            // Set cookies on both the cookie store and response
             cookiesToSet.forEach(({ name, value, options }) => {
               cookieStore.set(name, value, options);
-              response.cookies.set(name, value, options);
             });
           },
         },
       }
     );
 
-    // Exchange code for session
+    // Exchange code for session - this will set cookies via setAll
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
-      // Return response with cookies set
-      return response;
-    }
+      // Use forwardedHost for proper URL in production (Vercel)
+      const forwardedHost = request.headers.get("x-forwarded-host");
+      const protocol = request.headers.get("x-forwarded-proto") || "https";
+      const redirectUrl = forwardedHost
+        ? `${protocol}://${forwardedHost}${next}`
+        : new URL(next, baseUrl).toString();
 
-    console.error("Auth callback error:", error);
+      return NextResponse.redirect(redirectUrl);
+    }
   }
 
   // Return the user to an error page with instructions
