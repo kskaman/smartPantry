@@ -6,20 +6,23 @@ export async function GET(request: Request) {
   const code = requestUrl.searchParams.get("code");
   const next = requestUrl.searchParams.get("next") ?? "/dashboard/home";
 
+  // Use NEXT_PUBLIC_APP_URL for redirects, fallback to request origin
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+
   if (code) {
     const supabase = await createServerClient();
-    
+
     // Exchange code for session
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
       // Force a hard redirect to ensure cookies are set properly
-      return NextResponse.redirect(new URL(next, requestUrl.origin));
+      return NextResponse.redirect(new URL(next, baseUrl));
     }
-    
+
     console.error("Auth callback error:", error);
   }
 
   // Return the user to an error page with instructions
-  return NextResponse.redirect(new URL("/auth/error", requestUrl.origin));
+  return NextResponse.redirect(new URL("/auth/error", baseUrl));
 }
