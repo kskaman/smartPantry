@@ -10,7 +10,9 @@ export async function proxy(req: NextRequest) {
     pathname.startsWith("/auth") ||
     pathname === "/favicon.ico" ||
     pathname.startsWith("/_next") ||
-    pathname.startsWith("/public")
+    pathname.startsWith("/public") ||
+    pathname.startsWith("/manifest.json") ||
+    pathname.startsWith("/icons/")
   ) {
     return NextResponse.next();
   }
@@ -42,7 +44,7 @@ export async function proxy(req: NextRequest) {
     }
   );
 
-  // Check if user is authenticated
+  // Refresh session if expired
   const {
     data: { user },
   } = await supabase.auth.getUser();
