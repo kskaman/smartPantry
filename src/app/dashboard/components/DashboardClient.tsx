@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { AddItemModal } from "./AddItemModal";
+import { ScanReceiptModal } from "./ScanReceiptModal";
 import { Item } from "@/types/database";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,6 +15,7 @@ interface DashboardClientProps {
 
 export function DashboardClient({ userId, recentItems }: DashboardClientProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isScanModalOpen, setIsScanModalOpen] = useState(false);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -40,7 +42,12 @@ export function DashboardClient({ userId, recentItems }: DashboardClientProps) {
             <CardTitle>Quick Actions</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-3">
-            <Button className="w-full">Scan Receipt</Button>
+            <Button 
+              className="w-full"
+              onClick={() => setIsScanModalOpen(true)}
+            >
+              Scan Receipt
+            </Button>
             <Button
               variant="outline"
               onClick={() => setIsModalOpen(true)}
@@ -95,6 +102,11 @@ export function DashboardClient({ userId, recentItems }: DashboardClientProps) {
           // Refresh the page to show updated stats
           window.location.reload();
         }}
+      />
+
+      <ScanReceiptModal
+        isOpen={isScanModalOpen}
+        onClose={() => setIsScanModalOpen(false)}
       />
     </>
   );
