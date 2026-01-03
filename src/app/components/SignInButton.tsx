@@ -2,13 +2,14 @@
 
 import { supabase } from "@/lib/supabase/client";
 import { Button } from "@/ui/components";
+import { getFullUrl } from "@/lib/app-url";
 
 export function SignInButton() {
   const handleSignIn = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
+        redirectTo: getFullUrl("/auth/callback"),
       },
     });
 
