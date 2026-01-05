@@ -12,6 +12,7 @@ export type ButtonVariant =
   | "icon";
 
 export interface ButtonProps {
+  type?: "button" | "submit" | "reset";
   className?: string;
   children?: React.ReactNode;
   id?: string;
@@ -30,13 +31,14 @@ export interface ButtonProps {
 
 const Button = memo(
   ({
+    type = "button",
     variant = "primary",
     children,
     icon,
     color,
     width = "100%",
     height = "44px",
-    maxWidth = "100%",
+    maxWidth = "250px",
     onClick,
     disabled = false,
     loading = false,
@@ -63,6 +65,7 @@ const Button = memo(
 
     return (
       <button
+        type={type}
         disabled={disabled || loading}
         onClick={onClick}
         style={style}

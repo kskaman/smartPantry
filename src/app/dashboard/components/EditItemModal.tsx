@@ -12,13 +12,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { toast } from "sonner";
 
 interface EditItemModalProps {
@@ -38,10 +31,8 @@ export function EditItemModal({
     name: "",
     quantity: 1,
     unit: null,
-    location: "fridge",
     expiry_date: null,
     purchase_date: null,
-    category: null,
     notes: null,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -53,10 +44,8 @@ export function EditItemModal({
         name: item.name,
         quantity: item.quantity,
         unit: item.unit,
-        location: item.location,
         expiry_date: item.expiry_date || null,
         purchase_date: item.purchase_date || null,
-        category: item.category || null,
         notes: item.notes || null,
       });
     }
@@ -158,29 +147,6 @@ export function EditItemModal({
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="location">Location *</Label>
-            <Select
-              value={formData.location}
-              onValueChange={(value) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  location: value as ItemUpdate["location"],
-                }))
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select location" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="fridge">Fridge</SelectItem>
-                <SelectItem value="pantry">Pantry</SelectItem>
-                <SelectItem value="freezer">Freezer</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="purchase_date">Purchase Date</Label>
@@ -203,18 +169,6 @@ export function EditItemModal({
                 onChange={handleChange}
               />
             </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="category">Category</Label>
-            <Input
-              type="text"
-              id="category"
-              name="category"
-              value={formData.category || ""}
-              onChange={handleChange}
-              placeholder="e.g., Dairy, Meat, Produce"
-            />
           </div>
 
           <div className="space-y-2">

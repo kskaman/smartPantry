@@ -104,11 +104,17 @@ export function InventoryClient({
         setItems((prev) =>
           prev.filter((item) => !expiredItems.some((exp) => exp.id === item.id))
         );
-        toast.success(`Deleted ${successCount} expired item${successCount !== 1 ? "s" : ""}`);
+        toast.success(
+          `Deleted ${successCount} expired item${successCount !== 1 ? "s" : ""}`
+        );
       }
 
       if (successCount < expiredItems.length) {
-        toast.error(`Failed to delete ${expiredItems.length - successCount} item${expiredItems.length - successCount !== 1 ? "s" : ""}`);
+        toast.error(
+          `Failed to delete ${expiredItems.length - successCount} item${
+            expiredItems.length - successCount !== 1 ? "s" : ""
+          }`
+        );
       }
     } catch {
       toast.error("Failed to delete expired items");
@@ -118,7 +124,7 @@ export function InventoryClient({
   };
 
   const expiredItems = getExpiredItems(items);
-  
+
   const filteredItems =
     filter === "all"
       ? items
@@ -146,13 +152,23 @@ export function InventoryClient({
               { value: "pantry", label: "Pantry", variant: undefined },
               { value: "freezer", label: "Freezer", variant: undefined },
               { value: "other", label: "Other", variant: undefined },
-              { value: "expired", label: "Expired", variant: "destructive" as const },
+              {
+                value: "expired",
+                label: "Expired",
+                variant: "destructive" as const,
+              },
             ] as const
           ).map((option) => (
             <Button
               key={option.value}
-              onClick={() => setFilter(option.value as Location | "all" | "expired")}
-              variant={filter === option.value ? (option.variant || "default") : "outline"}
+              onClick={() =>
+                setFilter(option.value as Location | "all" | "expired")
+              }
+              variant={
+                filter === option.value
+                  ? option.variant || "default"
+                  : "outline"
+              }
               size="sm"
             >
               {option.label} ({locationCounts[option.value]})
@@ -203,9 +219,7 @@ export function InventoryClient({
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <h3 className="text-lg font-semibold">{item.name}</h3>
-                      <Badge variant="secondary" className="capitalize">
-                        {item.location}
-                      </Badge>
+
                       {expiryStatus && (
                         <Badge variant={expiryStatus.variant}>
                           {expiryStatus.label}
@@ -217,7 +231,7 @@ export function InventoryClient({
                         Quantity: {item.quantity}
                         {item.unit && ` ${item.unit}`}
                       </span>
-                      {item.category && <span>Category: {item.category}</span>}
+
                       {item.expiry_date && (
                         <span>
                           Expires:{" "}

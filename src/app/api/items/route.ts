@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     const body: ItemInsert = await request.json();
 
     // Validate required fields
-    if (!body.name || !body.location || !body.quantity) {
+    if (!body.name || !body.quantity || !body.expiry_date) {
       return NextResponse.json(
         { error: "Missing required data" },
         { status: 400 }
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     const itemData: ItemInsert = {
       ...body,
       user_id: user.id,
-      quantity: body.quantity || 1,
+      quantity: body.quantity,
     };
 
     const supabase = await createServerClient();
@@ -34,6 +34,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (error) {
+      console.log("Item POST error:", error);
       return NextResponse.json(
         { error: "Failed to create item" },
         { status: 500 }

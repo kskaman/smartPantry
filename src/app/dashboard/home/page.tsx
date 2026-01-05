@@ -1,10 +1,10 @@
 import { createServerClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/auth";
-import { DashboardClient } from "../components/DashboardClient";
 import { ExpiredItemsBanner } from "../components/ExpiredItemsBanner";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getExpiryStats } from "@/lib/expiry-utils";
+import { AddItemsSection } from "../components/AddItemsSection";
 
 export default async function Dashboard() {
   // Middleware already protects this route, just get user data
@@ -13,7 +13,7 @@ export default async function Dashboard() {
   if (!user) {
     return null; // Should never happen due to middleware
   }
-
+  console.log("User ID:", user.id);
   const supabase = await createServerClient();
 
   // Fetch stats from database
@@ -34,6 +34,7 @@ export default async function Dashboard() {
         </p>
       </div>
 
+      <AddItemsSection userId={user.id} />
       {/* Expired Items Banner */}
       <ExpiredItemsBanner items={items || []} />
 
@@ -93,12 +94,6 @@ export default async function Dashboard() {
           </CardContent>
         </Card>
       </div>
-
-      {/* Quick Actions */}
-      <DashboardClient
-        userId={user.id}
-        recentItems={items?.slice(0, 5) || []}
-      />
     </div>
   );
 }

@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { ItemInsert } from "@/types/database";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,14 +11,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { toast } from "sonner";
+import { Button } from "@/ui/components";
 
 interface AddItemModalProps {
   isOpen: boolean;
@@ -39,10 +32,8 @@ export function AddItemModal({
     name: "",
     quantity: 1,
     unit: null,
-    location: "fridge",
     expiry_date: null,
     purchase_date: null,
-    category: null,
     notes: null,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -73,10 +64,8 @@ export function AddItemModal({
         name: "",
         quantity: 1,
         unit: null,
-        location: "fridge",
         expiry_date: null,
         purchase_date: null,
-        category: null,
         notes: null,
       });
 
@@ -146,7 +135,7 @@ export function AddItemModal({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="unit">Unit</Label>
+              <Label htmlFor="unit">Unit *</Label>
               <Input
                 type="text"
                 id="unit"
@@ -155,31 +144,9 @@ export function AddItemModal({
                 autoComplete="off"
                 onChange={handleChange}
                 placeholder="e.g., lbs, oz, pieces"
+                required
               />
             </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="location">Location *</Label>
-            <Select
-              value={formData.location}
-              onValueChange={(value) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  location: value as ItemInsert["location"],
-                }))
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select location" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="fridge">Fridge</SelectItem>
-                <SelectItem value="pantry">Pantry</SelectItem>
-                <SelectItem value="freezer">Freezer</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -195,28 +162,16 @@ export function AddItemModal({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="expiry_date">Expiry Date</Label>
+              <Label htmlFor="expiry_date">Expiry Date *</Label>
               <Input
                 type="date"
                 id="expiry_date"
                 name="expiry_date"
                 value={formData.expiry_date || ""}
                 onChange={handleChange}
+                required
               />
             </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="category">Category</Label>
-            <Input
-              type="text"
-              id="category"
-              name="category"
-              value={formData.category || ""}
-              onChange={handleChange}
-              autoComplete="off"
-              placeholder="e.g., Dairy, Meat, Produce"
-            />
           </div>
 
           <div className="space-y-2">
@@ -241,7 +196,12 @@ export function AddItemModal({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting} className="flex-1">
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={isSubmitting}
+              className="flex-1"
+            >
               {isSubmitting ? "Adding..." : "Add Item"}
             </Button>
           </div>

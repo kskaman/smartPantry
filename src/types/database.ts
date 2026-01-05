@@ -6,10 +6,8 @@ export interface Item {
   name: string;
   quantity: number;
   unit: string | null;
-  location: Location;
   expiry_date: string | null;
   purchase_date: string | null;
-  category: string | null;
   notes: string | null;
   created_at: string;
   updated_at: string;
@@ -20,10 +18,8 @@ export interface ItemInsert {
   name: string;
   quantity?: number;
   unit?: string | null;
-  location: Location;
   expiry_date?: string | null;
   purchase_date?: string | null;
-  category?: string | null;
   notes?: string | null;
 }
 
@@ -31,10 +27,7 @@ export interface ItemUpdate {
   name?: string;
   quantity?: number;
   unit?: string | null;
-  location?: Location;
   expiry_date?: string | null;
   purchase_date?: string | null;
-  category?: string | null;
   notes?: string | null;
 }
-
