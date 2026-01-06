@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
 
     const supabase = await createServerClient();
     const { searchParams } = new URL(request.url);
-    const location = searchParams.get("location");
+    const search = searchParams.get("search");
 
     let query = supabase
       .from("items")
@@ -66,8 +66,9 @@ export async function GET(request: NextRequest) {
       .order("expiry_date", { ascending: true, nullsFirst: false })
       .order("created_at", { ascending: false });
 
-    if (location) {
-      query = query.eq("location", location);
+    // Optional: server-side search by name
+    if (search) {
+      query = query.ilike("name", `%${search}%`);
     }
 
     const { data, error } = await query;

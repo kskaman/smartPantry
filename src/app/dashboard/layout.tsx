@@ -34,7 +34,7 @@ export default function DashboardLayout({
         <Divider />
 
         {/* Main Content */}
-        <div className="flex-1 flex min-h-0 h-full w-full p-[32px]">
+        <div className="flex-1 main-page">
           <main className="flex-1">{children}</main>
         </div>
 

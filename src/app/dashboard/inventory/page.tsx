@@ -1,7 +1,6 @@
 import { createServerClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/auth";
 import { InventoryClient } from "./components/InventoryClient";
-import { ExpiredItemsBanner } from "../components/ExpiredItemsBanner";
 
 export default async function InventoryPage() {
   // Middleware already protects this route, just get user data
@@ -27,8 +26,6 @@ export default async function InventoryPage() {
           Manage your household food items
         </p>
       </div>
-
-      <ExpiredItemsBanner items={items || []} showDeleteButton={false} />
 
       <InventoryClient userId={user.id} initialItems={items || []} />
     </div>

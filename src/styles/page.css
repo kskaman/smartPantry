@@ -3,24 +3,7 @@
   min-height: 100vh;
   width: 100%;
   background-color: var(--main-page-bg);
-
   display: flex;
-  align-items: center;
   justify-content: center;
-
-  padding: 1rem; /* mobile safe padding */
-}
-
-/* Tablet and up */
-@media (min-width: 640px) {
-  .main-page {
-    padding: 2rem;
-  }
-}
-
-/* Desktop */
-@media (min-width: 1024px) {
-  .main-page {
-    padding: 3rem;
-  }
+  padding: 2rem; /* mobile safe padding */
 }

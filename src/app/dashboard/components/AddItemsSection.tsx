@@ -5,16 +5,12 @@ import { ScanReceiptModal } from "./ScanReceiptModal";
 import { Button } from "@/ui/components";
 import { AddItemModal } from "./AddItemModal";
 
-interface Props {
-  userId: string;
-}
-
-export function AddItemsSection({ userId }: Props) {
+export function AddItemsSection() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isScanModalOpen, setIsScanModalOpen] = useState(false);
   return (
     <>
-      <div className="flex gap-4 flex-row">
+      <div className="flex gap-4 md:gap-8 flex-row">
         <Button variant="primary" onClick={() => setIsScanModalOpen(true)}>
           Scan Receipt
         </Button>
@@ -23,14 +19,13 @@ export function AddItemsSection({ userId }: Props) {
           onClick={() => setIsModalOpen(true)}
           className="w-full"
         >
-          Add Item Manually
+          Add Item
         </Button>
       </div>
 
       <AddItemModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        userId={userId}
         onSuccess={() => {
           // Refresh the page to show updated stats
           window.location.reload();

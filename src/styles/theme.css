@@ -54,4 +54,8 @@
 
   /* divider */
   --divider-color: #e1ecea;
+
+  /* card */
+  --card-bg: #ffffff;
+  --card-border: #e1ecea;
 }

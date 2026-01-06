@@ -17,23 +17,19 @@ import { Button } from "@/ui/components";
 interface AddItemModalProps {
   isOpen: boolean;
   onClose: () => void;
-  userId: string;
   onSuccess?: () => void;
 }
 
 export function AddItemModal({
   isOpen,
   onClose,
-  userId,
   onSuccess,
 }: AddItemModalProps) {
   const [formData, setFormData] = useState<ItemInsert>({
-    user_id: userId,
     name: "",
     quantity: 1,
     unit: null,
     expiry_date: null,
-    purchase_date: null,
     notes: null,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -60,12 +56,10 @@ export function AddItemModal({
 
       // Reset form
       setFormData({
-        user_id: userId,
         name: "",
         quantity: 1,
         unit: null,
         expiry_date: null,
-        purchase_date: null,
         notes: null,
       });
 
@@ -149,18 +143,7 @@ export function AddItemModal({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="purchase_date">Purchase Date</Label>
-              <Input
-                type="date"
-                id="purchase_date"
-                name="purchase_date"
-                value={formData.purchase_date || ""}
-                onChange={handleChange}
-              />
-            </div>
-
+          <div className="">
             <div className="space-y-2">
               <Label htmlFor="expiry_date">Expiry Date *</Label>
               <Input
