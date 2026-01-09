@@ -11,7 +11,8 @@ export type ButtonVariant =
   | "text"
   | "icon";
 
-export interface ButtonProps {
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   type?: "button" | "submit" | "reset";
   className?: string;
   children?: React.ReactNode;
@@ -27,6 +28,10 @@ export interface ButtonProps {
   onClick?: () => void;
   disabled?: boolean;
   loading?: boolean;
+  /** Accessible label for screen readers */
+  ariaLabel?: string;
+  /** ID of the element that labels this button */
+  ariaLabelledBy?: string;
 }
 
 const Button = memo(
@@ -42,6 +47,9 @@ const Button = memo(
     onClick,
     disabled = false,
     loading = false,
+    ariaLabel,
+    ariaLabelledBy,
+    ...rest
   }: ButtonProps) => {
     const variantInfo = useMemo(() => {
       const isTextOnly = variant === "text";
@@ -66,6 +74,8 @@ const Button = memo(
     return (
       <button
         type={type}
+        aria-label={ariaLabel}
+        aria-labelledby={ariaLabelledBy}
         disabled={disabled || loading}
         onClick={onClick}
         style={style}
@@ -75,6 +85,7 @@ const Button = memo(
           `btn-${variant}`,
           (disabled || loading) && "btn--disabled"
         )}
+        {...rest}
       >
         {loading ? (
           <LoadingSpinner size="small" variant="spinner" />
@@ -87,7 +98,7 @@ const Button = memo(
             {isRegular && (
               <>
                 {icon && <span>{icon}</span>}
-                <span className="text-preset-4 text-nowrap">{children}</span>
+                <span className="text-body-medium text-nowrap">{children}</span>
               </>
             )}
           </>

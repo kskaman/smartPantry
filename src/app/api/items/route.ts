@@ -5,7 +5,7 @@ import { ItemInsert } from "@/types/database";
 
 export async function POST(request: NextRequest) {
   try {
-    const { user, error: authError } = await getApiUser();
+    const { error: authError } = await getApiUser();
     if (authError) return authError;
 
     const body: ItemInsert = await request.json();
@@ -18,18 +18,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Ensure user_id matches session
-    const itemData: ItemInsert = {
-      ...body,
-      user_id: user.id,
-      quantity: body.quantity,
-    };
-
     const supabase = await createServerClient();
 
+    // RLS will automatically set user_id from session
     const { data, error } = await supabase
       .from("items")
-      .insert([itemData])
+      .insert([body])
       .select()
       .single();
 
@@ -52,23 +46,41 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const { user, error: authError } = await getApiUser();
+    const { error: authError } = await getApiUser();
     if (authError) return authError;
 
     const supabase = await createServerClient();
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search");
+    const filter = searchParams.get("filter"); // 'expired' | 'expiring-soon'
 
+    // RLS automatically filters by user_id
     let query = supabase
       .from("items")
       .select("*")
-      .eq("user_id", user.id)
       .order("expiry_date", { ascending: true, nullsFirst: false })
       .order("created_at", { ascending: false });
 
-    // Optional: server-side search by name
+    // Server-side search by name
     if (search) {
       query = query.ilike("name", `%${search}%`);
+    }
+
+    // Server-side filtering by expiry status
+    if (filter === "expired") {
+      // Get items that have already expired (expiry_date < today)
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      query = query.lt("expiry_date", today.toISOString());
+    } else if (filter === "expiring-soon") {
+      // Get items expiring within the next 2 days (today <= expiry_date < today + 2 days)
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const twoDaysLater = new Date(today);
+      twoDaysLater.setDate(twoDaysLater.getDate() + 2);
+      query = query
+        .gte("expiry_date", today.toISOString())
+        .lt("expiry_date", twoDaysLater.toISOString());
     }
 
     const { data, error } = await query;
@@ -82,8 +94,7 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json(data || []);
-  } catch (error) {
-    console.error("API error:", error);
+  } catch {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

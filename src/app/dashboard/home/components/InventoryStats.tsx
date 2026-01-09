@@ -3,7 +3,7 @@
 import { CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/ui/components";
-import { useInventoryStats } from "@/hooks/useSupabaseQuery";
+import { useInventoryStats } from "@/hooks/useInventoryStats";
 
 export function InventoryStats() {
   const { data, isLoading } = useInventoryStats();
@@ -23,7 +23,7 @@ export function InventoryStats() {
           <p className="text-sm text-muted-foreground mb-1">Total Items</p>
 
           <p className="text-3xl font-semibold">
-            {isLoading ? "—" : total ?? 0}
+            {isLoading ? "--" : total ?? 0}
           </p>
 
           <p className="text-muted-foreground text-sm mt-2">
@@ -44,7 +44,7 @@ export function InventoryStats() {
           <p className="text-sm text-muted-foreground mb-1">Expiring Soon</p>
 
           <p className="text-3xl font-semibold">
-            {isLoading ? "—" : expiringSoon ?? 0}
+            {isLoading ? "--" : expiringSoon ?? 0}
           </p>
 
           <p className="text-muted-foreground text-sm mt-2">
@@ -65,7 +65,7 @@ export function InventoryStats() {
           <p className="text-sm text-muted-foreground mb-1">Expired Items</p>
 
           <p className="text-3xl font-semibold">
-            {isLoading ? "—" : expired ?? 0}
+            {isLoading ? "--" : expired ?? 0}
           </p>
 
           <p className="text-muted-foreground text-sm mt-2">

@@ -1,7 +1,7 @@
 import { RecipeOverview } from "@/types/recipes";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/ui/components";
 import { Badge } from "@/components/ui/badge";
 
 import Image from "next/image";

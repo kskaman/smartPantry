@@ -82,7 +82,7 @@ const Sidebar = ({ expanded, setExpanded }: SidebarProps) => {
                   }
                 />
 
-                {expanded && <span className="text-preset-4">{name}</span>}
+                {expanded && <span className="text-small">{name}</span>}
               </div>
 
               {expanded && active && (

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/ui/components";
 import {
   Dialog,
   DialogContent,
@@ -174,14 +174,13 @@ export function ScanReceiptModal({ isOpen, onClose }: ScanReceiptModalProps) {
                 {isCameraActive && (
                   <Button
                     onClick={captureImage}
-                    size="lg"
                     className="rounded-full w-16 h-16 p-0"
                   >
                     <Camera className="h-6 w-6" />
                   </Button>
                 )}
                 {!isCameraActive && !error && (
-                  <Button onClick={startCamera} size="lg">
+                  <Button onClick={startCamera}>
                     <Camera className="h-5 w-5 mr-2" />
                     Start Camera
                   </Button>
@@ -189,11 +188,11 @@ export function ScanReceiptModal({ isOpen, onClose }: ScanReceiptModalProps) {
               </>
             ) : (
               <>
-                <Button onClick={retakePhoto} variant="outline" size="lg">
+                <Button onClick={retakePhoto} variant="outline">
                   <RotateCcw className="h-5 w-5 mr-2" />
                   Retake
                 </Button>
-                <Button onClick={confirmImage} size="lg">
+                <Button onClick={confirmImage}>
                   <Check className="h-5 w-5 mr-2" />
                   Use This Photo
                 </Button>
@@ -203,7 +202,7 @@ export function ScanReceiptModal({ isOpen, onClose }: ScanReceiptModalProps) {
         </div>
 
         <DialogFooter>
-          <Button variant="ghost" onClick={handleClose}>
+          <Button variant="outline" onClick={handleClose}>
             Cancel
           </Button>
         </DialogFooter>

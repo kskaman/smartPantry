@@ -44,7 +44,7 @@ const BottomNavbar = () => {
                 />
 
                 {/* hidden <640, show >=640 */}
-                <span className="text-preset-4 hidden sm:inline">{name}</span>
+                <span className="text-small hidden sm:inline">{name}</span>
               </div>
             </Link>
           );

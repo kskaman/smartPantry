@@ -4,15 +4,10 @@
  */
 
 export { useDebounce } from "./useDebounce";
-export { useDeferredSearch } from "./useDeferredSearch";
+export { useInventoryStats } from "./useInventoryStats";
 
 // Auth hooks
-export { useUser, useSession, useSupabase, signOut } from "./useAuth";
+export { useUser, useSession } from "./useAuth";
 
-// Direct Supabase query hooks (alternative to API routes)
-export {
-  useItemsDirect,
-  useCreateItemDirect,
-  useUpdateItemDirect,
-  useDeleteItemDirect,
-} from "./useSupabaseQuery";
+// item hooks
+export { useItems } from "./useItems";

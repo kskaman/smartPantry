@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { RecipeOverview } from "@/types/recipes";
 import { Item } from "@/types/database";
 import { ShoppingCart } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/ui/components";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import RecipeCard from "../components/RecipeCard";

@@ -58,4 +58,46 @@
   /* card */
   --card-bg: #ffffff;
   --card-border: #e1ecea;
+
+  /* Select / dropdown */
+  --select-bg: #ffffff;
+  --select-border: #d1d9d6;
+  --select-text: var(--text-main);
+  --select-placeholder: #6b7280;
+  --select-focus-ring: rgba(1, 71, 69, 0.12);
+
+  /* text input colors */
+  --input-field-bg: #ffffff;
+  --input-field-border: #cacfd8;
+  --input-field-label-color: #0e121b;
+  --input-field-subLabel-color: #0e121b;
+  --input-field-info-text: #525866;
+  --input-field-disabled-bg: #f5f7fa;
+  --input-field-hover-bg: #f5f7fa;
+  --input-item-icon-color: #2b303b;
+  /* warning text color */
+  --warning-color: #fb3748;
+}
+
+/* Basic select styles used by custom Select component */
+.select-component {
+  background: var(--select-bg);
+  color: var(--select-text);
+  border: 1px solid var(--select-border);
+  padding: 8px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  font-family: inherit;
+}
+
+.select-component:focus {
+  outline: 2px solid var(--select-focus-ring);
+  outline-offset: 2px;
+}
+
+.select-component option[disabled] {
+  color: var(--select-placeholder);
 }

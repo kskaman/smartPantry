@@ -1,33 +1,88 @@
-import { createServerClient } from "@/lib/supabase/server";
-import { getCurrentUser } from "@/lib/auth";
-import { InventoryClient } from "./components/InventoryClient";
+"use client";
 
-export default async function InventoryPage() {
-  // Middleware already protects this route, just get user data
-  const user = await getCurrentUser();
+import { useState } from "react";
+import { Search, Trash2 } from "lucide-react";
+import { useDebounce, useItems } from "@/hooks";
+import { Button, Select, TextInput } from "@/ui/components";
+import { AddItemsSection } from "../components/AddItemsSection";
+import { InventoryList } from "./components";
+import { FilterOption, filterOptions, getEmptyStateContent } from "@/constants";
 
-  if (!user) {
-    return null; // Should never happen due to middleware
-  }
+export default function InventoryPage() {
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState<FilterOption>("all");
+  const debouncedSearch = useDebounce(search, 1000);
 
-  const supabase = await createServerClient();
-  const { data: items } = await supabase
-    .from("items")
-    .select("*")
-    .eq("user_id", user.id)
-    .order("expiry_date", { ascending: true, nullsFirst: false })
-    .order("created_at", { ascending: false });
+  const { items, isLoading, fetchItems, deleteItem, deleteMultipleItems } =
+    useItems(debouncedSearch, filter === "all" ? undefined : filter);
+
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+
+  const handleBulkDeleteExpired = async () => {
+    if (items.length === 0) return;
+
+    setIsBulkDeleting(true);
+    const itemIds = items.map((item) => item.id);
+    await deleteMultipleItems(itemIds);
+    setIsBulkDeleting(false);
+  };
+
+  const emptyState = getEmptyStateContent(filter);
+
+  const bulkDeleteButton = filter === "expired" && items.length > 0 && (
+    <div className="flex justify-end">
+      <Button
+        onClick={handleBulkDeleteExpired}
+        variant="warning"
+        width="225px"
+        disabled={isBulkDeleting}
+        icon={<Trash2 className="h-4 w-4" />}
+      >
+        Delete All Expired ({items.length})
+      </Button>
+    </div>
+  );
 
   return (
-    <div className="section-shell py-8">
-      <div className="mb-8">
-        <h1 className="text-4xl font-semibold mb-2">Inventory</h1>
-        <p className="text-muted-foreground">
-          Manage your household food items
-        </p>
+    <div className="flex flex-col gap-5">
+      <div className="space-y-2">
+        <h1 className="text-title">Inventory</h1>
+        <p className="text-small">Track expired and expiring items</p>
       </div>
 
-      <InventoryClient userId={user.id} initialItems={items || []} />
+      <AddItemsSection />
+
+      <div className="flex flex-col lg:flex-row gap-2 justify-center">
+        <div className="flex-1">
+          <TextInput
+            onChange={(e) => setSearch(e.target.value)}
+            value={search}
+            placeholder="Search items"
+            startIcon={<Search className="h-4 w-4 text-muted-foreground" />}
+          />
+        </div>
+
+        <div className="flex-1 -mt-4 lg:mt-[3px]">
+          <Select
+            value={filter}
+            onChange={(val) => setFilter(val as FilterOption)}
+            ariaLabel="Inventory view"
+            options={filterOptions}
+            placeholderOption={filterOptions[0]}
+            placeholderSelectable={true}
+          />
+        </div>
+      </div>
+
+      <InventoryList
+        items={items}
+        isLoading={isLoading}
+        onRefresh={fetchItems}
+        onDelete={deleteItem}
+        emptyTitle={emptyState.title}
+        emptyDescription={emptyState.description}
+        header={bulkDeleteButton}
+      />
     </div>
   );
 }
