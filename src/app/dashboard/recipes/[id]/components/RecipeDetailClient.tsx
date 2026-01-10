@@ -56,7 +56,7 @@ export function RecipeDetailClient({ recipeId }: RecipeDetailClientProps) {
       <div className="min-h-screen bg-background">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           <Button
-            variant="ghost"
+            variant="secondary"
             onClick={() => router.back()}
             className="mb-6"
           >
@@ -79,7 +79,7 @@ export function RecipeDetailClient({ recipeId }: RecipeDetailClientProps) {
       <div className="min-h-screen bg-background">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           <Button
-            variant="ghost"
+            variant="secondary"
             onClick={() => router.back()}
             className="mb-6"
           >
@@ -105,7 +105,7 @@ export function RecipeDetailClient({ recipeId }: RecipeDetailClientProps) {
         {/* Header with Back Button */}
         <div className="flex items-center mb-6">
           <Button
-            variant="ghost"
+            variant="secondary"
             onClick={() => router.back()}
             className="self-start"
           >

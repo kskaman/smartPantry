@@ -12,7 +12,11 @@ export default function RecipesLayout({
   const pathname = usePathname();
 
   const tabs = [
-    { value: "suggestions", label: "Suggestions", href: "/dashboard/recipes/suggestions" },
+    {
+      value: "suggestions",
+      label: "Suggestions",
+      href: "/dashboard/recipes/suggestions",
+    },
     { value: "search", label: "Search", href: "/dashboard/recipes/search" },
   ];
 
@@ -31,7 +35,7 @@ export default function RecipesLayout({
           const isActive = pathname === tab.href;
           return (
             <Link key={tab.value} href={tab.href}>
-              <Button variant={isActive ? "default" : "outline"}>
+              <Button variant={isActive ? "primary" : "outline"}>
                 {tab.label}
               </Button>
             </Link>

@@ -36,7 +36,7 @@ export function RecipesClient() {
             onClick={() =>
               setActiveTab(option.value as "suggestions" | "search")
             }
-            variant={activeTab === option.value ? "default" : "outline"}
+            variant={activeTab === option.value ? "primary" : "outline"}
           >
             {option.label}
           </Button>
