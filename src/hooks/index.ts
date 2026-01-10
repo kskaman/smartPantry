@@ -11,3 +11,4 @@ export { useUser, useSession } from "./useAuth";
 
 // item hooks
 export { useItems } from "./useItems";
+export { useItemMutations } from "./useItemMutations";

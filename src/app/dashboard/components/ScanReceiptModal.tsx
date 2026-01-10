@@ -1,14 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Button } from "@/ui/components";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
+import { Button, CustomModal } from "@/ui/components";
 import { Camera, RotateCcw, Check } from "lucide-react";
 
 interface ScanReceiptModalProps {
@@ -118,95 +111,95 @@ export function ScanReceiptModal({ isOpen, onClose }: ScanReceiptModalProps) {
   }, [isOpen, isCameraActive, capturedImage, startCamera]);
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden">
-        <DialogHeader>
-          <DialogTitle>Scan Receipt</DialogTitle>
-        </DialogHeader>
+    <CustomModal
+      isOpen={isOpen}
+      onClose={handleClose}
+      title="Scan Receipt"
+      maxWidth="xl"
+    >
+      <div className="space-y-4">
+        {error && (
+          <div className="bg-(--warning-color)/10 text-(--warning-color) px-4 py-3 rounded-lg">
+            <p className="text-small">{error}</p>
+          </div>
+        )}
 
-        <div className="space-y-4">
-          {error && (
-            <div className="bg-destructive/10 text-destructive px-4 py-3 rounded-lg">
-              <p className="text-sm">{error}</p>
-            </div>
-          )}
+        <div className="relative bg-black rounded-lg overflow-hidden">
+          {!capturedImage ? (
+            <>
+              {/* Camera View */}
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                muted
+                className="w-full h-auto max-h-[60vh] object-contain"
+              />
 
-          <div className="relative bg-black rounded-lg overflow-hidden">
-            {!capturedImage ? (
-              <>
-                {/* Camera View */}
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  playsInline
-                  muted
-                  className="w-full h-auto max-h-[60vh] object-contain"
-                />
-
-                {/* Camera Overlay */}
-                <div className="absolute inset-0 pointer-events-none">
-                  <div className="absolute inset-0 border-2 border-white/30 m-8 rounded-lg" />
-                  <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-full text-sm">
-                    Position receipt within frame
-                  </div>
+              {/* Camera Overlay */}
+              <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute inset-0 border-2 border-white/30 m-8 rounded-lg" />
+                <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-full text-sm">
+                  Position receipt within frame
                 </div>
-              </>
-            ) : (
-              <>
-                {/* Captured Image Preview */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={capturedImage}
-                  alt="Captured receipt"
-                  className="w-full h-auto max-h-[60vh] object-contain"
-                />
-              </>
-            )}
-          </div>
-
-          {/* Hidden canvas for capturing */}
-          <canvas ref={canvasRef} className="hidden" />
-
-          {/* Controls */}
-          <div className="flex gap-3 justify-center">
-            {!capturedImage ? (
-              <>
-                {isCameraActive && (
-                  <Button
-                    onClick={captureImage}
-                    className="rounded-full w-16 h-16 p-0"
-                  >
-                    <Camera className="h-6 w-6" />
-                  </Button>
-                )}
-                {!isCameraActive && !error && (
-                  <Button onClick={startCamera}>
-                    <Camera className="h-5 w-5 mr-2" />
-                    Start Camera
-                  </Button>
-                )}
-              </>
-            ) : (
-              <>
-                <Button onClick={retakePhoto} variant="outline">
-                  <RotateCcw className="h-5 w-5 mr-2" />
-                  Retake
-                </Button>
-                <Button onClick={confirmImage}>
-                  <Check className="h-5 w-5 mr-2" />
-                  Use This Photo
-                </Button>
-              </>
-            )}
-          </div>
+              </div>
+            </>
+          ) : (
+            <>
+              {/* Captured Image Preview */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={capturedImage}
+                alt="Captured receipt"
+                className="w-full h-auto max-h-[60vh] object-contain"
+              />
+            </>
+          )}
         </div>
 
-        <DialogFooter>
+        {/* Hidden canvas for capturing */}
+        <canvas ref={canvasRef} className="hidden" />
+
+        {/* Controls */}
+        <div className="flex gap-3 justify-center">
+          {!capturedImage ? (
+            <>
+              {isCameraActive && (
+                <Button
+                  onClick={captureImage}
+                  className="rounded-full w-16 h-16 p-0"
+                >
+                  <Camera className="h-6 w-6" />
+                </Button>
+              )}
+              {!isCameraActive && !error && (
+                <Button onClick={startCamera}>
+                  <Camera className="h-5 w-5 mr-2" />
+                  Start Camera
+                </Button>
+              )}
+            </>
+          ) : (
+            <>
+              <Button onClick={retakePhoto} variant="outline">
+                <RotateCcw className="h-5 w-5 mr-2" />
+                Retake
+              </Button>
+              <Button onClick={confirmImage}>
+                <Check className="h-5 w-5 mr-2" />
+                Use This Photo
+              </Button>
+            </>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="flex justify-end pt-4 border-t border-(--card-border)">
           <Button variant="outline" onClick={handleClose}>
             Cancel
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </div>
+      </div>
+    </CustomModal>
   );
 }

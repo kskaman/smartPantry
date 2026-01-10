@@ -8,6 +8,7 @@ import ItemModal from "./ItemModal";
 export function AddItemsSection() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isScanModalOpen, setIsScanModalOpen] = useState(false);
+
   return (
     <>
       <div className="flex gap-4 flex-row">
@@ -22,10 +23,7 @@ export function AddItemsSection() {
       <ItemModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSuccess={() => {
-          // Refresh the page to show updated stats
-          window.location.reload();
-        }}
+        // onSuccess is no longer needed as TanStack Query will automatically refetch
       />
 
       <ScanReceiptModal

@@ -1,73 +1,47 @@
-import Link from "next/link";
+"use client";
+
+import { useRouter } from "next/navigation";
 import { Button } from "@/ui/components";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { AlertCircle, ArrowLeft } from "lucide-react";
+import { AlertCircle, ArrowLeft, LogIn } from "lucide-react";
 
-export default function AuthErrorPage({
-  searchParams,
-}: {
-  searchParams: { error?: string };
-}) {
-  const errorMessages: Record<string, string> = {
-    Configuration: "There is a problem with the server configuration.",
-    AccessDenied: "You do not have permission to sign in.",
-    Verification:
-      "The verification token has expired or has already been used.",
-    Default: "An error occurred during authentication.",
-  };
-
-  const error = searchParams.error || "Default";
-  const errorMessage = errorMessages[error] || errorMessages.Default;
+export default function AuthErrorPage() {
+  const router = useRouter();
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-amber-50 p-4">
-      <div className="w-full max-w-md">
-        <Card className="shadow-xl">
-          <CardHeader className="space-y-1">
-            <div className="flex justify-center mb-4">
-              <div className="rounded-full bg-destructive/10 p-3">
-                <AlertCircle className="h-8 w-8 text-destructive" />
-              </div>
-            </div>
-            <CardTitle className="text-2xl text-center">
-              Authentication Error
-            </CardTitle>
-            <CardDescription className="text-center">
-              {errorMessage}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="rounded-lg bg-muted p-4">
-              <p className="text-sm text-muted-foreground">
-                <strong>Error code:</strong> {error}
-              </p>
-            </div>
+    <div className="main-page">
+      <div className="w-full max-w-md flex items-center justify-center flex-col gap-6">
+        <div className="w-16 h-16 rounded-full bg-(--warning-color)/10 flex items-center justify-center">
+          <AlertCircle className="w-8 h-8 text-(--warning-color)" />
+        </div>
 
-            <div className="space-y-2">
-              <Link href="/auth/signin" className="block">
-                <Button className="w-full" variant="default">
-                  Try Again
-                </Button>
-              </Link>
-              <Link href="/" className="block">
-                <Button className="w-full" variant="outline">
-                  <ArrowLeft className="mr-2 h-4 w-4" />
-                  Back to Home
-                </Button>
-              </Link>
-            </div>
+        <div className="text-center space-y-2">
+          <h1 className="text-heading text-(--text-title)">
+            Authentication Error
+          </h1>
+          <p className="text-body text-(--text-secondary)">
+            Something went wrong during authentication.
+          </p>
+        </div>
 
-            <div className="text-center text-sm text-muted-foreground">
-              <p>If this problem persists, please contact support.</p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="w-full flex flex-col gap-3">
+          <Button
+            variant="primary"
+            onClick={() => router.push("/auth/signin")}
+            icon={<LogIn className="h-4 w-4" />}
+            width="100%"
+          >
+            Go to Sign In
+          </Button>
+
+          <Button
+            variant="outline"
+            onClick={() => router.back()}
+            icon={<ArrowLeft className="h-4 w-4" />}
+            width="100%"
+          >
+            Go Back
+          </Button>
+        </div>
       </div>
     </div>
   );

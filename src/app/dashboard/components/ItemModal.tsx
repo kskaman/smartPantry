@@ -1,18 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Item, ItemInsert } from "@/types/database";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { toast } from "sonner";
-import { Button, Select } from "@/ui/components";
+import { Item } from "@/types";
+import { Button, Select, CustomModal, TextInput } from "@/ui/components";
+import { UNIT_OPTIONS } from "@/constants";
+import { useItemMutations } from "@/hooks";
 
 interface ItemModalProps {
   isOpen: boolean;
@@ -28,82 +20,63 @@ export default function ItemModal({
   onSuccess,
 }: ItemModalProps) {
   const isEdit = !!item;
+  const { createItem, updateItem } = useItemMutations();
 
-  const [formData, setFormData] = useState<ItemInsert>({
-    name: "",
-    quantity: 1,
-    unit: null,
-    expiry_date: null,
-    notes: null,
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
+  // Initialize form data based on item prop
+  const getInitialFormData = (): Item => {
     if (item) {
-      setFormData({
+      return {
+        id: item.id,
         name: item.name,
         quantity: item.quantity,
         unit: item.unit,
         expiry_date: item.expiry_date || null,
-        notes: item.notes || null,
-      });
-    } else {
-      setFormData({
-        name: "",
-        quantity: 1,
-        unit: null,
-        expiry_date: null,
-        notes: null,
-      });
+      };
     }
-  }, [item, isOpen]);
+    return {
+      id: "",
+      name: "",
+      quantity: 1,
+      unit: null,
+      expiry_date: null,
+    };
+  };
+
+  const [formData, setFormData] = useState<Item>(getInitialFormData());
+  const [error, setError] = useState<string | null>(null);
+
+  const isSubmitting = createItem.isPending || updateItem.isPending;
+
+  // Reset form when modal opens/closes or item changes
+  useEffect(() => {
+    if (isOpen) {
+      setFormData(getInitialFormData());
+      setError(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, item?.id]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value === "" ? null : value }));
+    setFormData((prev: Item) => ({ ...prev, [name]: value === "" ? null : value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
     setError(null);
 
     if (!formData.name) {
-      const msg = "Name is required";
-      setError(msg);
-      toast.error(msg);
-      setIsSubmitting(false);
+      setError("Name is required");
       return;
     }
 
     try {
-      if (isEdit && item) {
-        const body: ItemInsert = formData as ItemInsert;
-        const response = await fetch(`/api/items/${item.id}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        });
-        if (!response.ok)
-          throw new Error(
-            (await response.json()).error || "Failed to update item"
-          );
-        toast.success("Item updated successfully");
+      if (isEdit && item && item.id) {
+        await updateItem.mutateAsync({ id: item.id, item: formData });
       } else {
-        const body: ItemInsert = formData as ItemInsert;
-        const response = await fetch(`/api/items`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        });
-        if (!response.ok)
-          throw new Error(
-            (await response.json()).error || "Failed to add item"
-          );
-        toast.success("Item added successfully");
+        await createItem.mutateAsync(formData);
       }
 
       onSuccess?.();
@@ -111,130 +84,82 @@ export default function ItemModal({
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to save item";
       setError(msg);
-      toast.error(msg);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>{isEdit ? "Edit Item" : "Add Item"}</DialogTitle>
-        </DialogHeader>
+    <CustomModal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={isEdit ? "Edit Item" : "Add Item"}
+    >
+      {error && (
+        <div className="rounded-lg bg-(--warning-color)/10 p-3 text-small text-(--warning-color) mb-4">
+          {error}
+        </div>
+      )}
 
-        {error && (
-          <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
-            {error}
-          </div>
-        )}
+      <form onSubmit={handleSubmit} className="space-y-2">
+        <TextInput
+          type="text"
+          id="name"
+          name="name"
+          label="Item Name"
+          value={formData.name || ""}
+          onChange={handleChange}
+        />
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Item Name *</Label>
-            <Input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name || ""}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="quantity">Quantity *</Label>
-              <Input
-                type="number"
-                id="quantity"
-                name="quantity"
-                value={formData.quantity || ""}
-                onChange={handleChange}
-                min="0.01"
-                step="0.01"
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="unit">Unit</Label>
-              <Select
-                value={formData.unit || ""}
-                onChange={(val) =>
-                  setFormData((prev) => ({ ...prev, unit: val || null }))
-                }
-                options={[
-                  { value: "pieces", label: "pieces" },
-                  { value: "pcs", label: "pcs" },
-                  { value: "g", label: "g" },
-                  { value: "kg", label: "kg" },
-                  { value: "mg", label: "mg" },
-                  { value: "ml", label: "ml" },
-                  { value: "l", label: "l" },
-                  { value: "oz", label: "oz" },
-                  { value: "lb", label: "lb" },
-                  { value: "cup", label: "cup" },
-                  { value: "tbsp", label: "tbsp" },
-                  { value: "tsp", label: "tsp" },
-                ]}
-                placeholder="Select unit"
-                placeholderOption={{ value: "", label: "(none)" }}
-                placeholderSelectable={true}
-              />
-            </div>
-          </div>
+        <div className="grid grid-cols-2 gap-4">
+          <TextInput
+            type="number"
+            id="quantity"
+            name="quantity"
+            label="Quantity"
+            value={formData.quantity?.toString() || ""}
+            onChange={handleChange}
+          />
 
           <div className="space-y-2">
-            <Label htmlFor="expiry_date">Expiry Date</Label>
-            <Input
-              type="date"
-              id="expiry_date"
-              name="expiry_date"
-              value={formData.expiry_date || ""}
-              onChange={handleChange}
+            <label className="text-small text-(--input-field-label-color)">
+              Unit
+            </label>
+            <Select
+              value={formData.unit || ""}
+              onChange={(val) =>
+                setFormData((prev: Item) => ({ ...prev, unit: val || null }))
+              }
+              options={UNIT_OPTIONS}
+              placeholder="Select unit"
+              placeholderOption={{ value: "", label: "(none)" }}
+              placeholderSelectable={true}
             />
           </div>
+        </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="notes">Notes</Label>
-            <Textarea
-              id="notes"
-              name="notes"
-              value={formData.notes || ""}
-              onChange={handleChange}
-              rows={3}
-              placeholder="Additional notes..."
-            />
-          </div>
+        <TextInput
+          type="date"
+          id="expiry_date"
+          name="expiry_date"
+          label="Expiry Date"
+          value={formData.expiry_date || ""}
+          onChange={handleChange}
+        />
 
-          <div className="flex gap-3 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onClose}
-              className="flex-1"
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              disabled={isSubmitting}
-              className="flex-1"
-            >
-              {isSubmitting
-                ? isEdit
-                  ? "Updating..."
-                  : "Adding..."
-                : isEdit
-                ? "Update Item"
-                : "Add Item"}
-            </Button>
-          </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+        <div className="flex gap-3 mt-6">
+          <Button type="button" variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button type="submit" variant="primary" disabled={isSubmitting}>
+            {isSubmitting
+              ? isEdit
+                ? "Updating..."
+                : "Adding..."
+              : isEdit
+              ? "Update Item"
+              : "Add Item"}
+          </Button>
+        </div>
+      </form>
+    </CustomModal>
   );
 }

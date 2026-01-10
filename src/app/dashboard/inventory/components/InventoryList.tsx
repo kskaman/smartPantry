@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { Item } from "@/types";
 import { Card, ConfirmModal, Loader } from "@/ui/components";
+import { useItemMutations } from "@/hooks";
 import ItemRow from "./ItemRow";
 import ItemModal from "@/app/dashboard/components/ItemModal";
 import EmptyState from "./EmptyState";
@@ -11,8 +12,6 @@ import Pagination from "./Pagination";
 interface InventoryListProps {
   items: Item[];
   isLoading: boolean;
-  onRefresh: () => void;
-  onDelete: (id: string) => Promise<boolean>;
   emptyTitle: string;
   emptyDescription: string;
   header?: React.ReactNode;
@@ -22,18 +21,18 @@ interface InventoryListProps {
 export default function InventoryList({
   items,
   isLoading,
-  onRefresh,
-  onDelete,
   emptyTitle,
   emptyDescription,
   header,
   itemsPerPage = 10,
 }: InventoryListProps) {
-  const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const { deleteItem } = useItemMutations();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
   const [editingItem, setEditingItem] = useState<Item | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+
+  const isDeleting = deleteItem.isPending;
 
   // Calculate pagination
   const totalPages = Math.ceil(items.length / itemsPerPage);
@@ -62,15 +61,12 @@ export default function InventoryList({
   const confirmDelete = async () => {
     if (!itemToDelete) return;
 
-    setIsDeleting(itemToDelete);
     setIsDeleteModalOpen(false);
-    await onDelete(itemToDelete);
-    setIsDeleting(null);
+    await deleteItem.mutateAsync(itemToDelete);
     setItemToDelete(null);
   };
 
   const handleEditSuccess = () => {
-    onRefresh();
     setEditingItem(null);
   };
 
@@ -94,18 +90,20 @@ export default function InventoryList({
             <table className="w-full">
               <tbody>
                 {paginatedItems.map((item) => (
-                  <ItemRow
-                    key={item.id}
-                    item={item}
-                    isDeleting={isDeleting}
-                    handleDelete={handleDelete}
-                    onEdit={setEditingItem}
-                  />
+                  <>
+                    <ItemRow
+                      key={item.id}
+                      item={item}
+                      isDeleting={isDeleting ? itemToDelete : null}
+                      handleDelete={handleDelete}
+                      onEdit={setEditingItem}
+                    />
+                  </>
                 ))}
               </tbody>
             </table>
           </div>
-          <div className="-mx-4 -mb-4">
+          <div>
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}

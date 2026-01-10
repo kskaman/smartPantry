@@ -1,4 +1,4 @@
-import Modal from "./Modal";
+import { CustomModal } from "./CustomModal";
 import Button from "./Button";
 
 interface ConfirmModalProps {
@@ -24,13 +24,10 @@ export default function ConfirmModal({
   cancelLabel = "Cancel",
   disabled = false,
 }: ConfirmModalProps) {
-  if (!isOpen) return null;
-
   return (
-    <Modal>
-      <div className="p-6">
-        <h2 className="text-xl font-semibold mb-2">{title}</h2>
-        <p className="text-gray-600 dark:text-gray-400 mb-6">{description}</p>
+    <CustomModal isOpen={isOpen} onClose={onClose} title={title} maxWidth="sm">
+      <div className="space-y-6">
+        <p className="text-body text-(--text-secondary)">{description}</p>
         <div className="flex gap-3 justify-end">
           <Button variant="outline" onClick={onClose} disabled={disabled}>
             {cancelLabel}
@@ -44,6 +41,6 @@ export default function ConfirmModal({
           </Button>
         </div>
       </div>
-    </Modal>
+    </CustomModal>
   );
 }

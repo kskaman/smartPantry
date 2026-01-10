@@ -4,7 +4,7 @@
  */
 
 // Database types
-export type { Item, ItemInsert, InventoryStats } from "./database";
+export type { Item, InventoryStats } from "./database";
 
 // Recipe types
 export type {

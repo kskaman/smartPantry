@@ -39,7 +39,10 @@ export default function DashboardLayout({
         </div>
 
         {/* Bottom navigation – mobile only */}
-        <div className="md:hidden sticky bottom-0 z-10 bg-[var(--navbar-bg)] h-[56px]">
+        <div
+          className="md:hidden sticky bottom-0 z-10
+         bg-[var(--navbar-bg)] h-[56px] sm:h-[81px]"
+        >
           {/* Divider above bottom nav */}
           <Divider />
           <BottomNavbar />

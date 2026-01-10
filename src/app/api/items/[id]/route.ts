@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getApiUser } from "@/lib/auth";
 import { createServerClient } from "@/lib/supabase/server";
-import { ItemInsert } from "@/types/database";
+import { Item } from "@/types";
 
 export async function PATCH(
   request: NextRequest,
@@ -12,7 +12,7 @@ export async function PATCH(
     if (authError) return authError;
 
     const { id } = await params;
-    const body: ItemInsert = await request.json();
+    const body: Omit<Item, "id"> = await request.json();
 
     const supabase = await createServerClient();
 
@@ -32,7 +32,9 @@ export async function PATCH(
       );
     }
 
-    return NextResponse.json(data);
+    // Strip timestamps before returning to frontend
+    const { created_at, updated_at, user_id, ...item } = data;
+    return NextResponse.json(item);
   } catch {
     return NextResponse.json(
       { error: "Internal server error" },

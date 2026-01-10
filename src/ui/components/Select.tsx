@@ -1,7 +1,14 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import React, {
+  CSSProperties,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
+import { createPortal } from "react-dom";
 
 export interface SelectOption {
   value: string;
@@ -19,11 +26,8 @@ interface SelectProps {
   disabled?: boolean;
   renderOption?: (option: SelectOption, isSelected: boolean) => React.ReactNode;
   ariaLabel?: string;
-  /** If true, selection is required (adds aria-required to the listbox) */
   required?: boolean;
-  /** Optional placeholder option to show as the first dropdown item */
   placeholderOption?: SelectOption | null;
-  /** Whether the placeholder option (if provided) is selectable */
   placeholderSelectable?: boolean;
 }
 
@@ -51,27 +55,57 @@ export default function Select({
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const listRef = useRef<HTMLUListElement | null>(null);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const [portalStyle, setPortalStyle] = useState<CSSProperties | null>(null);
 
+  // Measure and position the portal when opening
+  useLayoutEffect(() => {
+    if (!open || !buttonRef.current) return;
+
+    const update = () => {
+      const rect = buttonRef.current!.getBoundingClientRect();
+      const top = rect.bottom + window.scrollY;
+      const left = rect.left + window.scrollX;
+      const width = rect.width;
+      setPortalStyle({ position: "absolute", top, left, width });
+    };
+
+    update();
+    window.addEventListener("resize", update);
+    window.addEventListener("scroll", update, { passive: true });
+
+    return () => {
+      window.removeEventListener("resize", update);
+      window.removeEventListener("scroll", update);
+    };
+  }, [open]);
+
+  // Close on Escape and click outside (checks both container and portal list)
   useEffect(() => {
-    function onDoc(e: MouseEvent) {
-      if (!containerRef.current) return;
-      if (!containerRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
     }
 
-    document.addEventListener("mousedown", onDoc);
-    return () => document.removeEventListener("mousedown", onDoc);
-  }, []);
+    function onDoc(e: MouseEvent) {
+      const target = e.target as Node;
+      if (containerRef.current && containerRef.current.contains(target)) return;
+      if (listRef.current && listRef.current.contains(target)) return;
+      setOpen(false);
+    }
 
-  const selected = options.find((o) => o.value === value) || null;
-  // build the list of options to render; include placeholderOption first if provided
+    if (open) {
+      document.addEventListener("keydown", onKey);
+      document.addEventListener("mousedown", onDoc);
+    }
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("mousedown", onDoc);
+    };
+  }, [open]);
 
   function handleSelect(val: string) {
     if (disabled) return;
-    if (controlledValue === undefined) {
-      setUncontrolledValue(val);
-    }
+    if (controlledValue === undefined) setUncontrolledValue(val);
     onChange?.(val);
     setOpen(false);
   }
@@ -83,23 +117,26 @@ export default function Select({
       ? "px-4 py-3 text-base"
       : "px-3 py-2 text-sm";
 
+  const selected = options.find((o) => o.value === value) || null;
+
   return (
     <div
       ref={containerRef}
       className={`relative inline-block w-full ${className || ""}`}
     >
       <button
+        ref={buttonRef}
         type="button"
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label={ariaLabel}
         disabled={disabled}
         onClick={() => setOpen((s) => !s)}
-        className={`select-component flex items-center justify-between w-full ${sizeClasses}`}
+        className={`select-component flex items-center justify-between w-full rounded-[8px] ${sizeClasses}`}
       >
         <span
           className={`truncate ${
-            value ? "text-body-medium" : "text-caption text-muted-foreground"
+            selected ? "text-body-medium" : "text-caption text-muted-foreground"
           }`}
         >
           {selected
@@ -111,43 +148,46 @@ export default function Select({
         <ChevronDown />
       </button>
 
-      {open && (
-        <ul
-          role="listbox"
-          aria-required={required}
-          ref={listRef}
-          className="absolute z-50 mt-2 w-full bg-white border rounded-lg shadow-md max-h-60 overflow-auto"
-        >
-          {options.map((opt, idx) => {
-            const isPlaceholder = placeholderOption && idx === 0;
-            const isSelected = value === opt.value;
-            const handleClick = () => {
-              if (isPlaceholder && !placeholderSelectable) return;
-              handleSelect(opt.value);
-            };
-            return (
-              <li
-                key={opt.value + "-" + idx}
-                role="option"
-                aria-selected={isSelected}
-                aria-disabled={
-                  isPlaceholder && !placeholderSelectable ? true : undefined
-                }
-                onClick={handleClick}
-                className={`px-3 py-2 cursor-pointer hover:bg-gray-50 ${
-                  isSelected ? "bg-gray-100 font-medium" : ""
-                }`}
-              >
-                {renderOption ? (
-                  renderOption(opt, isSelected)
-                ) : (
-                  <span className="truncate">{opt.label}</span>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-      )}
+      {open && portalStyle
+        ? createPortal(
+            <ul
+              role="listbox"
+              aria-required={required}
+              ref={listRef}
+              style={portalStyle}
+              className="z-50 rounded-[8px] mt-2 shadow-md max-h-60 
+              overflow-auto border border-(--select-border) bg-(--select-bg)"
+            >
+              {options.map((opt, idx) => {
+                const isPlaceholder = !!placeholderOption && idx === 0;
+                const isSelected = value === opt.value;
+                const handleClick = () => {
+                  if (isPlaceholder && !placeholderSelectable) return;
+                  handleSelect(opt.value);
+                };
+                return (
+                  <li
+                    key={opt.value + "-" + idx}
+                    role="option"
+                    aria-selected={isSelected}
+                    aria-disabled={
+                      isPlaceholder && !placeholderSelectable ? true : undefined
+                    }
+                    onClick={handleClick}
+                    className={`px-3 py-2 cursor-pointer bg-(--select-bg) border-(--select-border)`}
+                  >
+                    {renderOption ? (
+                      renderOption(opt, isSelected)
+                    ) : (
+                      <span className="text-small">{opt.label}</span>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>,
+            document.body
+          )
+        : null}
     </div>
   );
 }

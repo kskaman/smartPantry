@@ -1,0 +1,17 @@
+/* Basic select styles used by custom Select component */
+.select-component {
+  background: var(--select-bg);
+  color: var(--select-text);
+  border: 1px solid var(--select-border);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  font-family: inherit;
+}
+
+.select-component option[disabled] {
+  color: var(--select-placeholder);
+}

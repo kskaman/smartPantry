@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getApiUser } from "@/lib/auth";
 import { createServerClient } from "@/lib/supabase/server";
-import { ItemInsert } from "@/types/database";
+import { Item } from "@/types";
 
 export async function POST(request: NextRequest) {
   try {
     const { error: authError } = await getApiUser();
     if (authError) return authError;
 
-    const body: ItemInsert = await request.json();
+    const body: Omit<Item, "id"> = await request.json();
 
     // Validate required fields
     if (!body.name || !body.quantity || !body.expiry_date) {
@@ -35,7 +35,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return NextResponse.json(data, { status: 201 });
+    // Strip timestamps before returning to frontend
+    const { created_at, updated_at, user_id, ...item } = data;
+    return NextResponse.json(item, { status: 201 });
   } catch {
     return NextResponse.json(
       { error: "Internal server error" },
@@ -93,7 +95,9 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    return NextResponse.json(data || []);
+    // Strip timestamps and user_id before returning to frontend
+    const items = (data || []).map(({ created_at, updated_at, user_id, ...item }) => item);
+    return NextResponse.json(items);
   } catch {
     return NextResponse.json(
       { error: "Internal server error" },

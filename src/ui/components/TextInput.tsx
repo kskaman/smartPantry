@@ -1,6 +1,5 @@
 import clsx from "clsx";
 import type { TextInputProps } from "../../types";
-import { Info } from "lucide-react";
 
 const TextInput = ({
   type = "text",
@@ -12,19 +11,9 @@ const TextInput = ({
   placeholder = "",
   startIcon,
   endIcon,
-  error,
-  infoText,
   disabled = false,
   onFocus,
 }: TextInputProps) => {
-  const hasError = Boolean(error?.message);
-  const borderColorClass = hasError
-    ? "border border-(--warning-color)"
-    : "border border-(--input-field-border)";
-
-  // choose the message to show
-  const message = hasError ? error!.message : infoText ? infoText : "";
-
   return (
     <div className="w-full flex flex-col gap-[1px]">
       <div className="mb-[2px] flex justify-between items-center">
@@ -42,11 +31,9 @@ const TextInput = ({
 
       <div
         className={clsx(
-          "flex items-center rounded-[12px] h-[44px]",
+          "flex items-center rounded-[8px] h-[40px]",
           disabled ? "bg-(--input-field-disabled-bg)" : "bg-(--input-field-bg)",
-          borderColorClass,
-          `active:ring-[2px] active:ring-(--btn-outer-shadow-color) 
-          active:ring-offset-[2px] active:ring-offset-(--btn-inner-shadow-color)`
+          "border border-(--input-field-border)"
         )}
       >
         {startIcon && <span className="ml-3 mr-2">{startIcon}</span>}
@@ -60,13 +47,17 @@ const TextInput = ({
           disabled={disabled}
           onChange={onChange}
           onFocus={onFocus}
+          autoComplete="off"
           className="
             flex-1 
             bg-transparent 
             outline-none 
             h-full 
             px-[8px] 
-            text-body"
+            text-body
+            [appearance:textfield]
+            [&::-webkit-outer-spin-button]:appearance-none
+            [&::-webkit-inner-spin-button]:appearance-none"
         />
 
         {endIcon && (
@@ -82,33 +73,6 @@ const TextInput = ({
           </span>
         )}
       </div>
-
-      <span
-        className="flex gap-1 items-start
-       min-h-5"
-      >
-        {message && (
-          <>
-            <Info
-              color={
-                hasError
-                  ? "var(--warning-color)"
-                  : "var(--input-field-info-text)"
-              }
-            />
-            <p
-              className={clsx(
-                hasError
-                  ? "text-(--warning-color)"
-                  : "text-(--input-field-info-text)",
-                "text-caption"
-              )}
-            >
-              {message}
-            </p>
-          </>
-        )}
-      </span>
     </div>
   );
 };

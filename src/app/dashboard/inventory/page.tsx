@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Search, Trash2 } from "lucide-react";
-import { useDebounce, useItems } from "@/hooks";
+import { useDebounce, useItems, useItemMutations } from "@/hooks";
 import { Button, Select, TextInput } from "@/ui/components";
 import { AddItemsSection } from "../components/AddItemsSection";
 import { InventoryList } from "./components";
@@ -13,19 +13,21 @@ export default function InventoryPage() {
   const [filter, setFilter] = useState<FilterOption>("all");
   const debouncedSearch = useDebounce(search, 1000);
 
-  const { items, isLoading, fetchItems, deleteItem, deleteMultipleItems } =
-    useItems(debouncedSearch, filter === "all" ? undefined : filter);
-
-  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+  const { items, isLoading } = useItems(
+    debouncedSearch,
+    filter === "all" ? undefined : filter
+  );
+  const { deleteMultipleItems } = useItemMutations();
 
   const handleBulkDeleteExpired = async () => {
     if (items.length === 0) return;
 
-    setIsBulkDeleting(true);
-    const itemIds = items.map((item) => item.id);
-    await deleteMultipleItems(itemIds);
-    setIsBulkDeleting(false);
+    const itemIds = items.map((item) => item.id).filter((id): id is string => !!id);
+    if (itemIds.length === 0) return;
+    await deleteMultipleItems.mutateAsync(itemIds);
   };
+
+  const isBulkDeleting = deleteMultipleItems.isPending;
 
   const emptyState = getEmptyStateContent(filter);
 
@@ -62,7 +64,7 @@ export default function InventoryPage() {
           />
         </div>
 
-        <div className="flex-1 -mt-4 lg:mt-[3px]">
+        <div className="flex-1  lg:mt-[3px]">
           <Select
             value={filter}
             onChange={(val) => setFilter(val as FilterOption)}
@@ -77,8 +79,6 @@ export default function InventoryPage() {
       <InventoryList
         items={items}
         isLoading={isLoading}
-        onRefresh={fetchItems}
-        onDelete={deleteItem}
         emptyTitle={emptyState.title}
         emptyDescription={emptyState.description}
         header={bulkDeleteButton}

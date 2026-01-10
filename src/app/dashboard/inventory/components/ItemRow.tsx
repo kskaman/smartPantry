@@ -19,7 +19,7 @@ export default function ItemRow({
   const expiryStatus = getExpiryStatus(item.expiry_date);
 
   return (
-    <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+    <tr className="hover:bg-(--table-row-hover-bg) transition-colors">
       <td className="px-6 py-4">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-3">
@@ -33,7 +33,9 @@ export default function ItemRow({
               Quantity:{" "}
               <span className="space-x-[3px]">
                 <strong className="text-gray-900">{item.quantity}</strong>
-                {item.unit && <strong className="text-gray-900">{item.unit}</strong>}
+                {item.unit && (
+                  <strong className="text-gray-900">{item.unit}</strong>
+                )}
               </span>
             </span>
             {item.expiry_date && (
@@ -58,7 +60,7 @@ export default function ItemRow({
           )}
           <Button
             variant="icon"
-            onClick={() => handleDelete(item.id)}
+            onClick={() => handleDelete(item.id!)}
             disabled={isDeleting === item.id}
             icon={<Trash2 className="h-5 w-5 text-red-500" />}
           />
