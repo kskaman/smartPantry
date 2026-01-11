@@ -3,7 +3,7 @@ import type { TextInputProps } from "../../types";
 
 const TextInput = ({
   type = "text",
-  onChange,
+  onChange = () => {},
   label,
   subLabel,
   name,

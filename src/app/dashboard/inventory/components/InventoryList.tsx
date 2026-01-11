@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { Item } from "@/types";
-import { Card, ConfirmModal, Loader } from "@/ui/components";
+import { ConfirmModal, Loader } from "@/ui/components";
 import { useItemMutations } from "@/hooks";
 import ItemRow from "./ItemRow";
 import ItemModal from "@/app/dashboard/components/ItemModal";
@@ -85,20 +85,19 @@ export default function InventoryList({
       {items.length === 0 ? (
         <EmptyState title={emptyTitle} description={emptyDescription} />
       ) : (
-        <Card>
-          <div className="overflow-x-auto -m-4">
+        <div className="bg-(--table-bg) rounded-[12px] border border-(--table-border) py-2">
+          <div className="overflow-x-auto">
             <table className="w-full">
               <tbody>
-                {paginatedItems.map((item) => (
-                  <>
-                    <ItemRow
-                      key={item.id}
-                      item={item}
-                      isDeleting={isDeleting ? itemToDelete : null}
-                      handleDelete={handleDelete}
-                      onEdit={setEditingItem}
-                    />
-                  </>
+                {paginatedItems.map((item, idx) => (
+                  <ItemRow
+                    key={item.id}
+                    item={item}
+                    isDeleting={isDeleting ? itemToDelete : null}
+                    handleDelete={handleDelete}
+                    onEdit={setEditingItem}
+                    isLastItem={idx === paginatedItems.length - 1}
+                  />
                 ))}
               </tbody>
             </table>
@@ -112,7 +111,7 @@ export default function InventoryList({
               itemsPerPage={itemsPerPage}
             />
           </div>
-        </Card>
+        </div>
       )}
 
       <ConfirmModal

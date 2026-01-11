@@ -13,6 +13,7 @@ export interface Item {
 
 export type InventoryStats = {
   total: number;
+  fresh: number;
   expired: number;
   expiringSoon: number;
 };

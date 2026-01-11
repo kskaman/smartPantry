@@ -81,12 +81,12 @@ export function getExpiredItems(items: Item[]): Item[] {
 }
 
 /**
- * Filter items expiring soon (within 2 days)
+ * Filter items expiring soon (within 7 days)
  */
 export function getExpiringSoonItems(items: Item[]): Item[] {
   return items.filter((item) => {
     const status = getExpiryStatus(item.expiry_date);
-    return status && !status.isExpired && status.daysRemaining <= 2;
+    return status && !status.isExpired && status.daysRemaining <= 7;
   });
 }
 

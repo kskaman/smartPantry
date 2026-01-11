@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Item } from "@/types/database";
 import { toast } from "sonner";
 
-type ItemFilter = "expired" | "expiring-soon";
+type ItemFilter = "expired" | "expiring-soon" | "fresh";
 
 export function useItems(search?: string, filter?: ItemFilter) {
   const queryKey = ["items", search, filter];

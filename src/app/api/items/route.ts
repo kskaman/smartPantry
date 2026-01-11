@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
     const supabase = await createServerClient();
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search");
-    const filter = searchParams.get("filter"); // 'expired' | 'expiring-soon'
+    const filter = searchParams.get("filter"); // 'expired' | 'expiring-soon' | 'fresh'
 
     // RLS automatically filters by user_id
     let query = supabase
@@ -75,14 +75,21 @@ export async function GET(request: NextRequest) {
       today.setHours(0, 0, 0, 0);
       query = query.lt("expiry_date", today.toISOString());
     } else if (filter === "expiring-soon") {
-      // Get items expiring within the next 2 days (today <= expiry_date < today + 2 days)
+      // Get items expiring within the next 7 days (today <= expiry_date < today + 7 days)
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      const twoDaysLater = new Date(today);
-      twoDaysLater.setDate(twoDaysLater.getDate() + 2);
+      const sevenDaysLater = new Date(today);
+      sevenDaysLater.setDate(sevenDaysLater.getDate() + 7);
       query = query
         .gte("expiry_date", today.toISOString())
-        .lt("expiry_date", twoDaysLater.toISOString());
+        .lt("expiry_date", sevenDaysLater.toISOString());
+    } else if (filter === "fresh") {
+      // Get items expiring after 7 days or with no expiry date
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const sevenDaysLater = new Date(today);
+      sevenDaysLater.setDate(sevenDaysLater.getDate() + 7);
+      query = query.or(`expiry_date.gte.${sevenDaysLater.toISOString()},expiry_date.is.null`);
     }
 
     const { data, error } = await query;

@@ -27,7 +27,7 @@ export interface BaseInputProps extends BaseComponentProps {
 // Text input props
 export interface TextInputProps extends BaseInputProps {
   type?: "text" | "password" | "email" | "number" | "date";
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   label?: string;
   subLabel?: string | ReactNode;
   startIcon?: ReactNode;

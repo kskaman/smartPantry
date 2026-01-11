@@ -60,7 +60,7 @@ export default function Pagination({
 
   return (
     <div
-      className="flex mt-3 pt-2 items-center justify-between border-t"
+      className="flex p-4 items-center justify-between border-t"
       style={{ borderColor: "var(--divider-color)" }}
     >
       <div className="flex-1 flex justify-between items-center">

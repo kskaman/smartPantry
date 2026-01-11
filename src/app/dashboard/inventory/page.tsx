@@ -10,12 +10,12 @@ import { FilterOption, filterOptions, getEmptyStateContent } from "@/constants";
 
 export default function InventoryPage() {
   const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState<FilterOption>("all");
+  const [filter, setFilter] = useState<FilterOption>("fresh");
   const debouncedSearch = useDebounce(search, 1000);
 
   const { items, isLoading } = useItems(
     debouncedSearch,
-    filter === "all" ? undefined : filter
+    filter
   );
   const { deleteMultipleItems } = useItemMutations();
 

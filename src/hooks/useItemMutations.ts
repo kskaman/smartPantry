@@ -34,7 +34,13 @@ export function useItemMutations() {
 
   // Update item mutation
   const updateItem = useMutation({
-    mutationFn: async ({ id, item }: { id: string; item: Omit<Item, "id"> }) => {
+    mutationFn: async ({
+      id,
+      item,
+    }: {
+      id: string;
+      item: Omit<Item, "id">;
+    }) => {
       const response = await fetch(`/api/items/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },

@@ -7,6 +7,14 @@
   --text-main: #111827; /* body text */
   --text-secondary: #4b5563; /* subtitles, section labels */
   --text-tertiary: #6b7280; /* captions, helper text */
+  --text-label: #374151; /* form labels, metadata labels */
+  --text-value: #111827; /* data values, emphasized text */
+  --text-muted: #9ca3af; /* placeholder, disabled text */
+  --text-link: #014745; /* links, interactive text */
+  --text-danger: #dc2626; /* error, destructive action text */
+  --text-success: #059669; /* success messages */
+  --text-warning: #d97706; /* warning messages */
+  --text-info: #2563eb; /* informational text */
 
   /* navbar */
   --navbar-bg: #ffffff;
@@ -60,7 +68,10 @@
   --card-border: #e1ecea;
 
   /* Tables */
+  --table-bg: #ffffff;
   --table-row-hover-bg: #f5f7fa;
+  --table-border: #e1ecea;
+
   /* Select / dropdown */
   --select-bg: #ffffff;
   --select-border: #cacfd8;

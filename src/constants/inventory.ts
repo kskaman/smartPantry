@@ -1,24 +1,24 @@
 export const tabs = [
   {
-    label: "All",
-    path: "/dashboard/inventory/all",
-  },
-  {
-    label: "Expired",
-    path: "/dashboard/inventory/expired",
+    label: "Fresh",
+    path: "/dashboard/inventory/fresh",
   },
   {
     label: "Expiring Soon",
     path: "/dashboard/inventory/expiring-soon",
   },
+  {
+    label: "Expired",
+    path: "/dashboard/inventory/expired",
+  },
 ];
 
-export type FilterOption = "all" | "expired" | "expiring-soon";
+export type FilterOption = "fresh" | "expired" | "expiring-soon";
 
 export const filterOptions = [
-  { value: "all", label: "All" },
-  { value: "expired", label: "Expired" },
+  { value: "fresh", label: "Fresh" },
   { value: "expiring-soon", label: "Expiring Soon" },
+  { value: "expired", label: "Expired" },
 ];
 
 // Determine content based on filter
@@ -33,7 +33,12 @@ export const getEmptyStateContent = (filter: FilterOption) => {
     case "expiring-soon":
       return {
         title: "No items expiring soon",
-        description: "No items are expiring within the next 2 days",
+        description: "No items are expiring within the next 7 days",
+      };
+    case "fresh":
+      return {
+        title: "No fresh items",
+        description: "All your items are either expired or expiring soon",
       };
     default:
       return {
