@@ -5,6 +5,7 @@
 
 export { useDebounce } from "./useDebounce";
 export { useInventoryStats } from "./useInventoryStats";
+export { useSearch } from "./use-search";
 
 // Auth hooks
 export { useUser, useSession } from "./useAuth";

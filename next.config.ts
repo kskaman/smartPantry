@@ -19,8 +19,8 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "img.spoonacular.com",
-        pathname: "/recipes/**",
+        hostname: "www.themealdb.com",
+        pathname: "/images/**",
       },
     ],
   },

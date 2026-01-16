@@ -3,15 +3,16 @@
 import { useState, useEffect } from "react";
 import { RecipeOverview } from "@/types/recipes";
 import { Item } from "@/types/database";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, Search } from "lucide-react";
 import { Button } from "@/ui/components";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
-import RecipeCard from "../components/RecipeCard";
+import RecipeCard from "./RecipeCard";
 import DotLoader from "@/components/ui/DotLoader";
 
 export default function RecipeSuggestions() {
   const [recipes, setRecipes] = useState<RecipeOverview[]>([]);
+  const [filteredRecipes, setFilteredRecipes] = useState<RecipeOverview[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [inventoryItems, setInventoryItems] = useState<Item[]>([]);
@@ -41,6 +42,22 @@ export default function RecipeSuggestions() {
 
     fetchData();
   }, []);
+
+  // Filter recipes based on search query
+  useEffect(() => {
+    if (!debouncedSearchQuery.trim()) {
+      setFilteredRecipes(recipes);
+      return;
+    }
+
+    const query = debouncedSearchQuery.toLowerCase();
+    const filtered = recipes.filter(
+      (recipe) =>
+        recipe.title.toLowerCase().includes(query) ||
+        recipe.cuisine?.toLowerCase().includes(query)
+    );
+    setFilteredRecipes(filtered);
+  }, [debouncedSearchQuery, recipes]);
 
   if (loading) {
     return (
@@ -82,20 +99,41 @@ export default function RecipeSuggestions() {
     );
   }
 
+  if (filteredRecipes.length === 0 && debouncedSearchQuery) {
+    return (
+      <Card>
+        <CardContent className="text-center py-12">
+          <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+          <p className="text-muted-foreground text-lg mb-2">
+            No suggested recipes match &quot;{debouncedSearchQuery}&quot;
+          </p>
+          <p className="text-muted-foreground text-sm">
+            Try searching with different keywords or check the Search tab
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="mb-6">
         <h3 className="text-lg font-semibold mb-2">
-          Top Matching Recipes Based on Your Inventory
+          {filteredRecipes.length === recipes.length
+            ? "Top Matching Recipes Based on Your Inventory"
+            : `Showing ${filteredRecipes.length} of ${recipes.length} suggested recipes`}
         </h3>
         <p className="text-muted-foreground text-sm">
-          Showing the best {recipes.length} recipe
-          {recipes.length !== 1 ? "s" : ""} matching your available ingredients
+          {filteredRecipes.length === recipes.length
+            ? `Showing the best ${recipes.length} recipe${
+                recipes.length !== 1 ? "s" : ""
+              } matching your available ingredients`
+            : `Filtered by "${debouncedSearchQuery}"`}
         </p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {recipes.map((recipe) => (
+        {filteredRecipes.map((recipe) => (
           <RecipeCard key={recipe.id} recipe={recipe} />
         ))}
       </div>

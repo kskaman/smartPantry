@@ -9,14 +9,12 @@ export type { Item, InventoryStats } from "./database";
 // Recipe types
 export type {
   RecipeOverview,
-  SpoonacularRecipeByIngredients,
-  SpoonacularAnalyzedInstruction,
-  SpoonacularRecipeDetail,
-  RecipeDetail,
+  MealDBMeal,
+  MealDBSearchResponse,
 } from "./recipes";
 
 // Settings types
-export type { UserSettings, UserSettingsUpdate } from "./settings";
+export type { UserSettings } from "./settings";
 
 // Component types
 export type {

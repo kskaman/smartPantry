@@ -13,6 +13,7 @@ const TextInput = ({
   endIcon,
   disabled = false,
   onFocus,
+  onKeyDown,
 }: TextInputProps) => {
   return (
     <div className="w-full flex flex-col gap-[1px]">
@@ -35,6 +36,7 @@ const TextInput = ({
           disabled ? "bg-(--input-field-disabled-bg)" : "bg-(--input-field-bg)",
           "border border-(--input-field-border)"
         )}
+        onKeyDown={onKeyDown}
       >
         {startIcon && <span className="ml-3 mr-2">{startIcon}</span>}
 

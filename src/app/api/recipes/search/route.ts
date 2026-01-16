@@ -1,45 +1,40 @@
 import { NextRequest, NextResponse } from "next/server";
-import { searchRecipes } from "@/lib/spoonacular";
+import { searchMealsByName } from "@/lib/mealdb";
 import { getApiUser } from "@/lib/auth";
+import { RecipeOverview } from "@/types/recipes";
 
 /**
- * GET /api/recipes/search
- * Full recipe search with images and details
+ * GET /api/recipes/search?query={searchTerm}
+ * Search for recipes by name using MealDB API
  * Query params:
  *   - query: search term (required)
- *   - number: max results (default: 12)
  */
 export async function GET(request: NextRequest) {
   try {
     const { error: authError } = await getApiUser();
     if (authError) return authError;
 
-    // Get query parameters
+    // Get query parameter
     const { searchParams } = new URL(request.url);
     const query = searchParams.get("query") || "";
-    const numberParam = parseInt(searchParams.get("number") || "10", 12);
 
     if (!query.trim()) {
       return NextResponse.json([]);
     }
 
-    // Search recipes from Spoonacular
-    const results = await searchRecipes({
-      query,
-      number: numberParam,
-    });
-
-    // Transform to match RecipeOverview type expected by frontend
-    const recipes = results.map((recipe) => ({
-      id: recipe.id,
-      title: recipe.title,
-      image: recipe.image,
+    // Search recipes from MealDB
+    const meals = await searchMealsByName(query);
+    // Transform to RecipeOverview type
+    const recipes: RecipeOverview[] = meals.map((meal) => ({
+      id: meal.idMeal,
+      title: meal.strMeal,
+      image: meal.strMealThumb,
     }));
 
     return NextResponse.json(recipes);
   } catch {
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Failed to search recipes" },
       { status: 500 }
     );
   }

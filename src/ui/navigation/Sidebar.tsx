@@ -27,7 +27,7 @@ const Sidebar = ({ expanded, setExpanded }: SidebarProps) => {
         // container
         "flex flex-col items-center h-full gap-4 bg-[var(--navbar-bg)]",
         // width + padding
-        expanded ? "w-[280px] px-4 pb-5 pt-0" : "w-[56px] p-1"
+        expanded ? "w-[200px] px-4 pb-5 pt-0" : "w-[56px] p-1"
       )}
     >
       {/* toggle */}

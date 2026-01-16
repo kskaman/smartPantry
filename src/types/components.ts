@@ -36,6 +36,7 @@ export interface TextInputProps extends BaseInputProps {
   helpText?: string;
   maxLength?: number;
   onFocus?: () => void;
+  onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 // Password input props

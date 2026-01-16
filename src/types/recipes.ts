@@ -1,217 +1,70 @@
 // Recipe overview type used in the application for RecipeCard
 export interface RecipeOverview {
-  id: number;
+  id: string;
   title: string;
   image: string;
-  matchedIngredients?: string[];
-  unMatchedIngredients?: string[];
+  // matchedIngredients?: string[];
+  // unMatchedIngredients?: string[];
   matchScore?: number;
 }
 
-// Spoonacular API response types
-// get recipes by ingredients
-export interface SpoonacularRecipeByIngredients {
-  id: number;
-  title: string;
-  image: string;
-  imageType: string;
-  likes: number;
-  missedIngredientCount: number;
-  missedIngredients?: Array<{
-    id: number;
-    name: string;
-    image: string;
-    aisle: string;
-    meta: string[];
-    original: string;
-    originalName: string;
-    unit: string;
-    unitLong: string;
-    unitShort: string;
-    amount: number;
-  }>;
-  unusedIngredients: Array<{
-    id: number;
-    name: string;
-    image: string;
-    aisle: string;
-    meta: string[];
-    original: string;
-    originalName: string;
-    unit: string;
-    unitLong: string;
-    unitShort: string;
-    amount: number;
-  }>;
-  unusedIngredientCount: number;
-  usedIngredients: Array<{
-    id: number;
-    name: string;
-    image: string;
-    aisle: string;
-    meta: string[];
-    original: string;
-    originalName: string;
-    unit: string;
-    unitLong: string;
-    unitShort: string;
-    amount: number;
-  }>;
-  usedIngredientCount: number;
+// MealDB API response types
+export interface MealDBMeal {
+  idMeal: string;
+  strMeal: string;
+  strDrinkAlternate: string | null;
+  strCategory: string;
+  strArea: string;
+  strInstructions: string;
+  strMealThumb: string;
+  strTags: string | null;
+  strYoutube: string;
+  strIngredient1: string;
+  strIngredient2: string;
+  strIngredient3: string;
+  strIngredient4: string;
+  strIngredient5: string;
+  strIngredient6: string;
+  strIngredient7: string;
+  strIngredient8: string;
+  strIngredient9: string;
+  strIngredient10: string;
+  strIngredient11: string;
+  strIngredient12: string;
+  strIngredient13: string;
+  strIngredient14: string;
+  strIngredient15: string;
+  strIngredient16: string;
+  strIngredient17: string;
+  strIngredient18: string;
+  strIngredient19: string;
+  strIngredient20: string;
+  strMeasure1: string;
+  strMeasure2: string;
+  strMeasure3: string;
+  strMeasure4: string;
+  strMeasure5: string;
+  strMeasure6: string;
+  strMeasure7: string;
+  strMeasure8: string;
+  strMeasure9: string;
+  strMeasure10: string;
+  strMeasure11: string;
+  strMeasure12: string;
+  strMeasure13: string;
+  strMeasure14: string;
+  strMeasure15: string;
+  strMeasure16: string;
+  strMeasure17: string;
+  strMeasure18: string;
+  strMeasure19: string;
+  strMeasure20: string;
+  strSource: string;
+  strImageSource: string | null;
+  strCreativeCommonsConfirmed: string | null;
+  dateModified: string | null;
 }
 
-// Spoonacular API response type for analyzed instructions
-// GET https://api.spoonacular.com/recipes/{id}/analyzedInstructions
-export interface SpoonacularAnalyzedInstruction {
-  name: string;
-  steps: Array<{
-    number: number;
-    step: string;
-    ingredients: Array<{
-      id: number;
-      name: string;
-      localizedName: string;
-      image: string;
-    }>;
-    equipment: Array<{
-      id: number;
-      name: string;
-      localizedName: string;
-      image: string;
-      temperature?: {
-        number: number;
-        unit: string;
-      };
-    }>;
-    length?: {
-      number: number;
-      unit: string;
-    };
-  }>;
-}
-
-// Spoonacular API response type for recipe details by ID
-// GET https://api.spoonacular.com/recipes/{id}/information
-export interface SpoonacularRecipeDetail {
-  id: number;
-  title: string;
-  image: string;
-  imageType: string;
-  servings: number;
-  readyInMinutes: number;
-  cookingMinutes: number | null;
-  preparationMinutes: number | null;
-  sourceUrl: string;
-  spoonacularSourceUrl: string;
-  healthScore: number;
-  spoonacularScore: number;
-  pricePerServing: number;
-  cheap: boolean;
-  cuisines: string[];
-  dairyFree: boolean;
-  diets: string[];
-  glutenFree: boolean;
-  instructions: string;
-  ketogenic: boolean;
-  lowFodmap: boolean;
-  vegan: boolean;
-  vegetarian: boolean;
-  veryHealthy: boolean;
-  veryPopular: boolean;
-  whole30: boolean;
-  dishTypes: string[];
-  extendedIngredients: Array<{
-    id: number;
-    aisle: string;
-    image: string;
-    consistency: string;
-    name: string;
-    nameClean?: string;
-    original: string;
-    originalName: string;
-    amount: number;
-    unit: string;
-    meta: string[];
-    measures: {
-      us: {
-        amount: number;
-        unitShort: string;
-        unitLong: string;
-      };
-      metric: {
-        amount: number;
-        unitShort: string;
-        unitLong: string;
-      };
-    };
-  }>;
-  summary: string;
-  analyzedInstructions: Array<{
-    name: string;
-    steps: Array<{
-      number: number;
-      step: string;
-      ingredients: Array<{
-        id: number;
-        name: string;
-        localizedName: string;
-        image: string;
-      }>;
-      equipment: Array<{
-        id: number;
-        name: string;
-        localizedName: string;
-        image: string;
-      }>;
-      length?: {
-        number: number;
-        unit: string;
-      };
-    }>;
-  }>;
-  winePairing: {
-    pairedWines: string[];
-    pairingText: string;
-    productMatches: Array<{
-      id: number;
-      title: string;
-      description: string;
-      price: string;
-      imageUrl: string;
-      averageRating: number;
-      ratingCount: number;
-      score: number;
-      link: string;
-    }>;
-  };
-}
-
-// Simplified recipe detail type for the application
-export interface RecipeDetail {
-  id: number;
-  title: string;
-  image: string;
-  servings: number;
-  totalTime: number; // readyInMinutes
-  cookingTime: number | null; // cookingMinutes
-  preparationTime: number | null; // preparationMinutes
-  sourceUrl: string;
-  cuisines: string[];
-  ketogenic: boolean;
-  vegan: boolean;
-  vegetarian: boolean;
-  dishTypes: string[];
-  ingredients: Array<{
-    id: number;
-    name: string;
-    amount: number;
-    unit: string;
-    original: string;
-  }>;
-  summary: string;
-  instructions: string; // from instructions field or analyzedInstructions
-  winePairing: {
-    pairedWines: string[];
-    pairingText: string;
-  } | null;
+export interface MealDBSearchResponse {
+  meals: MealDBMeal[] | null;
 }

@@ -1,18 +1,16 @@
 import { RecipeOverview } from "@/types/recipes";
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/ui/components";
-import { Badge } from "@/components/ui/badge";
+import { Button, Card } from "@/ui/components";
 
 import Image from "next/image";
 import Link from "next/link";
 
 export default function RecipeCard({ recipe }: { recipe: RecipeOverview }) {
   return (
-    <Card key={recipe.id} className="hover:shadow-lg transition-shadow">
-      <CardContent className="pt-6">
+    <Card key={recipe.id}>
+      <div className="flex flex-col gap-4 -p-2 h-full">
         {recipe.image && (
-          <div className="relative w-full h-48 mb-4">
+          <div className="relative w-full aspect-[4/3] rounded-[8px]">
             <Image
               src={recipe.image}
               alt={recipe.title}
@@ -24,38 +22,17 @@ export default function RecipeCard({ recipe }: { recipe: RecipeOverview }) {
           </div>
         )}
 
-        <div className="mb-4">
-          <h4 className="font-semibold text-lg mb-2">{recipe.title}</h4>
-          <div className="flex items-center gap-2 mb-2">
-            <div>
-              {recipe.matchedIngredients &&
-                recipe.matchedIngredients.map((ingredient: string, index) => (
-                  <Badge
-                    key={index}
-                    className="bg-green-100 text-green-800 mr-1 mb-1"
-                  >
-                    {ingredient}
-                  </Badge>
-                ))}
-              {recipe.unMatchedIngredients &&
-                recipe.unMatchedIngredients.map((ingredient: string, index) => (
-                  <Badge
-                    key={index}
-                    className="bg-red-100 text-red-800 mr-1 mb-1"
-                  >
-                    {ingredient}
-                  </Badge>
-                ))}
-            </div>
-          </div>
-        </div>
+        <h4 className="text-subheading">{recipe.title}</h4>
 
-        <Link href={`/dashboard/recipes/${recipe.id}`}>
-          <Button className="w-full" variant="outline">
+        <Link
+          href={`/dashboard/recipes/${recipe.id}`}
+          className="mt-auto w-full"
+        >
+          <Button variant="primary" maxWidth="100%">
             View Recipe
           </Button>
         </Link>
-      </CardContent>
+      </div>
     </Card>
   );
 }
