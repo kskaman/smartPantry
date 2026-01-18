@@ -21,7 +21,7 @@ export async function searchMealsByName(query: string): Promise<MealDBMeal[]> {
 
   try {
     const response = await fetch(
-      `${MEAL_DB_BASE_URL}/search.php?s=${encodeURIComponent(query)}`
+      `${MEAL_DB_BASE_URL}/search.php?s=${encodeURIComponent(query)}`,
     );
 
     if (!response.ok) {
@@ -63,55 +63,80 @@ export async function getMealById(mealId: string): Promise<MealDBMeal | null> {
   }
 }
 
-// /**
-//  * Filter meals by ingredient(s) - Premium API only for multiple ingredients
-//  * @param ingredients - Comma-separated ingredient list
-//  * @returns Array of meals
-//  */
-// export async function filterMealsByIngredients(
-//   ingredients: string
-// ): Promise<MealDBMeal[]> {
-//   if (!MEALDB_API_KEY) {
-//     throw new Error("MEALDB_API_KEY is not configured");
-//   }
+/**
+ * Filter meals by a single ingredient
+ * Returns partial meal data (id, name, thumbnail only)
+ * @param ingredient - Single ingredient name
+ * @returns Array of partial meal objects
+ */
+export async function filterMealsByIngredient(
+  ingredient: string,
+): Promise<Array<{ idMeal: string; strMeal: string; strMealThumb: string }>> {
+  if (!MEAL_DB_API_KEY) {
+    throw new Error("MEALDB_API_KEY is not configured");
+  }
 
-//   try {
-//     const response = await fetch(
-//       `${MEALDB_BASE_URL}/filter.php?i=${encodeURIComponent(ingredients)}`
-//     );
+  if (!ingredient.trim()) {
+    return [];
+  }
 
-//     if (!response.ok) {
-//       throw new Error(`MealDB API error: ${response.status}`);
-//     }
+  try {
+    const response = await fetch(
+      `${MEAL_DB_BASE_URL}/filter.php?i=${encodeURIComponent(ingredient)}`,
+    );
 
-//     const data: MealDBSearchResponse = await response.json();
+    if (!response.ok) {
+      throw new Error(`MealDB API error: ${response.status}`);
+    }
 
-//     return data.meals || [];
-//   } catch (error) {
-//     console.error("Error filtering meals by ingredients:", error);
-//     throw error;
-//   }
-// }
+    const data = await response.json();
+    return data.meals || [];
+  } catch {
+    return [];
+  }
+}
 
-// /**
-//  * Helper function to extract non-empty ingredients from a meal
-//  * @param meal - MealDB meal object
-//  * @returns Array of ingredient objects with name and measure
-//  */
-// export function extractIngredients(meal: MealDBMeal): Array<{ name: string; measure: string }> {
-//   const ingredients: Array<{ name: string; measure: string }> = [];
+/**
+ * Search for recipes by multiple ingredients (OR logic)
+ * Searches each ingredient individually and returns unique meals with full details
+ * @param ingredients - Array of ingredient names
+ * @returns Array of full meal details
+ */
+export async function searchMealsByIngredients(
+  ingredients: string[],
+): Promise<MealDBMeal[]> {
+  if (!MEAL_DB_API_KEY) {
+    throw new Error("MEAL_DB_API_KEY is not configured");
+  }
 
-//   for (let i = 1; i <= 20; i++) {
-//     const ingredient = meal[`strIngredient${i}` as keyof MealDBMeal] as string;
-//     const measure = meal[`strMeasure${i}` as keyof MealDBMeal] as string;
+  if (!ingredients.length) {
+    return [];
+  }
 
-//     if (ingredient && ingredient.trim()) {
-//       ingredients.push({
-//         name: ingredient.trim(),
-//         measure: measure?.trim() || "",
-//       });
-//     }
-//   }
+  try {
+    const mealIdsSet = new Set<string>();
 
-//   return ingredients;
-// }
+    // Search each ingredient separately (OR logic)
+    await Promise.all(
+      ingredients.map(async (ingredient) => {
+        const partialMeals = await filterMealsByIngredient(ingredient);
+        partialMeals.forEach((meal) => mealIdsSet.add(meal.idMeal));
+      }),
+    );
+
+    if (mealIdsSet.size === 0) {
+      return [];
+    }
+
+    // Fetch full details for all unique meal IDs
+    const fullMeals = await Promise.all(
+      Array.from(mealIdsSet).map((id) => getMealById(id)),
+    );
+
+    // Filter out any null results
+    return fullMeals.filter((meal): meal is MealDBMeal => meal !== null);
+  } catch (error) {
+    console.error("Error searching meals by ingredients:", error);
+    throw error;
+  }
+}

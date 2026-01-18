@@ -1,15 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "@/ui/components";
 import SearchRecipes from "./components/SearchRecipes";
-// import RecipeSuggestions from "./components/RecipeSuggestions";
+import RecipeSuggestions from "./components/RecipeSuggestions";
 // import SavedRecipes from "./components/SavedRecipes";
 
 type TabType = "search" | "suggestions" | "saved";
 
 export default function RecipesPage() {
-  const [activeTab, setActiveTab] = useState<TabType>("search");
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const activeTab = (searchParams.get("tab") as TabType) || "search";
+
+  const handleTabChange = (tab: TabType) => {
+    // When changing tabs, reset all params to just the tab
+    router.push(`/dashboard/recipes?tab=${tab}`, { scroll: false });
+  };
 
   const tabs = [
     { value: "search" as TabType, label: "Search" },
@@ -32,21 +40,17 @@ export default function RecipesPage() {
           <Button
             key={tab.value}
             variant={activeTab === tab.value ? "primary" : "outline"}
-            onClick={() => setActiveTab(tab.value)}
+            onClick={() => handleTabChange(tab.value)}
           >
             {tab.label}
           </Button>
         ))}
       </div>
 
-      {/* Search Bar - Shared across all tabs */}
-
       {/* Tab Content */}
       {activeTab === "search" && <SearchRecipes />}
-      {/*{activeTab === "suggestions" && (
-        <RecipeSuggestions />
-      )}
-      {activeTab === "saved" && (
+      {activeTab === "suggestions" && <RecipeSuggestions />}
+      {/*{activeTab === "saved" && (
         <SavedRecipes />
       )} */}
     </div>

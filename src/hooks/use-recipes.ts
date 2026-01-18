@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { MealDBMeal } from "@/types/recipes";
+import { MealDBMeal, RecipeOverview } from "@/types/recipes";
 
 export function useRecipeDetail(recipeId: string) {
   const {
@@ -32,6 +32,38 @@ export function useRecipeDetail(recipeId: string) {
 
   return {
     recipe,
+    isLoading,
+    error,
+  };
+}
+
+export function useRecipeSuggestions() {
+  const {
+    data: recipes,
+    isLoading,
+    error,
+  } = useQuery<RecipeOverview[]>({
+    queryKey: ["recipe-suggestions"],
+    queryFn: async () => {
+      try {
+        const response = await fetch("/api/recipes/suggestions");
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch recipe suggestions");
+        }
+
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.log(error);
+        toast.error("Failed to load recipe suggestions");
+        throw error;
+      }
+    },
+  });
+
+  return {
+    recipes: recipes || [],
     isLoading,
     error,
   };

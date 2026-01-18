@@ -1,142 +1,203 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { RecipeOverview } from "@/types/recipes";
-import { Item } from "@/types/database";
-import { ShoppingCart, Search } from "lucide-react";
-import { Button } from "@/ui/components";
-import { Card, CardContent } from "@/components/ui/card";
-import Link from "next/link";
+import { useState, useMemo } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { Search } from "lucide-react";
 import RecipeCard from "./RecipeCard";
-import DotLoader from "@/components/ui/DotLoader";
+import { Card, Loader, Pagination } from "@/ui/components";
+import SearchBar from "./SearchBar";
+import { useSearch } from "@/hooks/use-search";
+import { useRecipeSuggestions } from "@/hooks/use-recipes";
+
+const ITEMS_PER_PAGE = 12;
 
 export default function RecipeSuggestions() {
-  const [recipes, setRecipes] = useState<RecipeOverview[]>([]);
-  const [filteredRecipes, setFilteredRecipes] = useState<RecipeOverview[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [inventoryItems, setInventoryItems] = useState<Item[]>([]);
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
+  // Fetch recipes with match scores
+  const { recipes, isLoading, error } = useRecipeSuggestions();
+  console.log("Fetched recipe suggestions:", recipes);
+  // Read from URL
+  const urlSearchQuery = searchParams.get("query") || "";
+  const currentPage = parseInt(searchParams.get("page") || "1", 10);
 
-        // Fetch inventory items
-        const inventoryResponse = await fetch("/api/items");
-        const inventoryData = await inventoryResponse.json();
-        setInventoryItems(inventoryData);
+  // Update URL params (adds to existing)
+  const updateSearchParams = (updates: { query?: string; page?: number }) => {
+    const params = new URLSearchParams(searchParams.toString());
 
-        // Fetch saved recipes with match scores
-        const recipesResponse = await fetch("/api/recipes/suggestions");
-        if (recipesResponse.ok) {
-          const recipesData = await recipesResponse.json();
-          setRecipes(recipesData);
-        }
-      } catch {
-        setError("Failed to load matching recipes.");
-      } finally {
-        setLoading(false);
+    if (updates.query !== undefined) {
+      if (updates.query) {
+        params.set("query", updates.query);
+      } else {
+        params.delete("query");
       }
-    };
-
-    fetchData();
-  }, []);
-
-  // Filter recipes based on search query
-  useEffect(() => {
-    if (!debouncedSearchQuery.trim()) {
-      setFilteredRecipes(recipes);
-      return;
+      // Reset page when search changes
+      params.set("page", "1");
     }
 
-    const query = debouncedSearchQuery.toLowerCase();
-    const filtered = recipes.filter(
-      (recipe) =>
-        recipe.title.toLowerCase().includes(query) ||
-        recipe.cuisine?.toLowerCase().includes(query)
-    );
-    setFilteredRecipes(filtered);
-  }, [debouncedSearchQuery, recipes]);
+    if (updates.page !== undefined) {
+      params.set("page", updates.page.toString());
+    }
 
-  if (loading) {
+    router.push(`/dashboard/recipes?${params.toString()}`, { scroll: false });
+  };
+
+  const { searchQuery: localSearchQuery, setSearchQuery } = useSearch({
+    onSearch: (query) => updateSearchParams({ query }),
+  });
+
+  // Sync local search with URL on mount and URL changes
+  useState(() => {
+    if (urlSearchQuery) {
+      setSearchQuery(urlSearchQuery);
+    }
+  });
+
+  const handleSearchSubmit = () => {
+    if (localSearchQuery.trim()) {
+      updateSearchParams({ query: localSearchQuery.trim() });
+    }
+  };
+
+  const handlePageChange = (page: number) => {
+    updateSearchParams({ page });
+  };
+
+  // Filter recipes based on search query
+  const filteredRecipes = useMemo(() => {
+    if (!urlSearchQuery.trim()) {
+      return recipes;
+    }
+
+    const query = urlSearchQuery.toLowerCase();
+    return recipes.filter((recipe) =>
+      recipe.title.toLowerCase().includes(query),
+    );
+  }, [urlSearchQuery, recipes]);
+
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredRecipes.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const paginatedRecipes = filteredRecipes.slice(startIndex, endIndex);
+
+  const hasSearched = urlSearchQuery !== "";
+
+  if (isLoading) {
     return (
-      <Card>
-        <CardContent className="text-center py-12 flex flex-col items-center text-muted-foreground mt-2">
-          Loading matching recipes
-          <DotLoader className="mb-4" />
-        </CardContent>
-      </Card>
+      <div className="space-y-6">
+        <div className="flex flex-col gap-4">
+          <SearchBar
+            value={localSearchQuery}
+            onChange={setSearchQuery}
+            onSearch={handleSearchSubmit}
+            placeholder="Search suggested recipes..."
+          />
+        </div>
+
+        <Card>
+          Loading recipe suggestions
+          <Loader />
+        </Card>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <Card>
-        <CardContent className="text-center py-12">
-          <p className="text-red-500">{error}</p>
-        </CardContent>
-      </Card>
+      <div className="space-y-6">
+        <div className="flex flex-col gap-4">
+          <SearchBar
+            value={localSearchQuery}
+            onChange={setSearchQuery}
+            onSearch={handleSearchSubmit}
+            placeholder="Search suggested recipes..."
+          />
+        </div>
+
+        <Card>Failed to load recipe suggestions. Please try again.</Card>
+      </div>
     );
   }
 
-  if (inventoryItems.length === 0) {
+  if (recipes.length === 0) {
     return (
-      <Card>
-        <CardContent className="text-center py-12">
-          <ShoppingCart className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <p className="text-muted-foreground text-lg mb-2">
-            No inventory items found
-          </p>
-          <p className="text-muted-foreground text-sm mb-4">
-            Add items to your inventory to see matching recipes
-          </p>
-          <Link href="/dashboard/inventory">
-            <Button>Go to Inventory</Button>
-          </Link>
-        </CardContent>
-      </Card>
-    );
-  }
+      <div className="space-y-6">
+        <SearchBar
+          value={localSearchQuery}
+          onChange={setSearchQuery}
+          onSearch={handleSearchSubmit}
+          placeholder="Search suggested recipes..."
+        />
 
-  if (filteredRecipes.length === 0 && debouncedSearchQuery) {
-    return (
-      <Card>
-        <CardContent className="text-center py-12">
-          <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <p className="text-muted-foreground text-lg mb-2">
-            No suggested recipes match &quot;{debouncedSearchQuery}&quot;
+        <Card>
+          <Search className="h-12 w-12 mx-auto" />
+          <p className="text-body-medium mx-auto">
+            No recipe suggestions found
           </p>
-          <p className="text-muted-foreground text-sm">
-            Try searching with different keywords or check the Search tab
-          </p>
-        </CardContent>
-      </Card>
+        </Card>
+      </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div className="mb-6">
-        <h3 className="text-lg font-semibold mb-2">
-          {filteredRecipes.length === recipes.length
-            ? "Top Matching Recipes Based on Your Inventory"
-            : `Showing ${filteredRecipes.length} of ${recipes.length} suggested recipes`}
-        </h3>
-        <p className="text-muted-foreground text-sm">
-          {filteredRecipes.length === recipes.length
-            ? `Showing the best ${recipes.length} recipe${
-                recipes.length !== 1 ? "s" : ""
-              } matching your available ingredients`
-            : `Filtered by "${debouncedSearchQuery}"`}
-        </p>
+      {/* Search Bar */}
+      <div className="flex flex-col gap-4">
+        <SearchBar
+          value={localSearchQuery}
+          onChange={setSearchQuery}
+          onSearch={handleSearchSubmit}
+          placeholder="Search suggested recipes..."
+        />
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {filteredRecipes.map((recipe) => (
-          <RecipeCard key={recipe.id} recipe={recipe} />
-        ))}
-      </div>
+      {/* Results */}
+      {hasSearched && filteredRecipes.length === 0 ? (
+        <Card>
+          <Search className="h-12 w-12 mx-auto mb-4" />
+          <p className="text-lg mb-2">
+            No recipes found for &quot;{urlSearchQuery}&quot;
+          </p>
+          <p className="text-sm">
+            Try different keywords or clear the search to see all suggestions
+          </p>
+        </Card>
+      ) : (
+        <>
+          <div className="flex flex-col gap-2">
+            <h3 className="text-body">
+              {hasSearched
+                ? `Found ${filteredRecipes.length} recipe${filteredRecipes.length !== 1 ? "s" : ""} for "${urlSearchQuery}"`
+                : `Top ${recipes.length} Recipe Suggestions`}
+            </h3>
+            <p className="text-small">
+              {hasSearched
+                ? "Filtered from your personalized suggestions"
+                : "Based on your inventory, prioritizing items expiring soon"}
+            </p>
+          </div>
+
+          {/* Recipe Grid */}
+          <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            {paginatedRecipes.map((recipe) => (
+              <RecipeCard key={recipe.id} recipe={recipe} />
+            ))}
+          </div>
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+              totalItems={filteredRecipes.length}
+              itemsPerPage={ITEMS_PER_PAGE}
+            />
+          )}
+        </>
+      )}
     </div>
   );
 }

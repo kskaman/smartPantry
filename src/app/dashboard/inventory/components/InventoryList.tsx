@@ -7,7 +7,7 @@ import { useItemMutations } from "@/hooks";
 import ItemRow from "./ItemRow";
 import ItemModal from "@/app/dashboard/components/ItemModal";
 import EmptyState from "./EmptyState";
-import Pagination from "./Pagination";
+import Pagination from "../../../../ui/components/Pagination";
 
 interface InventoryListProps {
   items: Item[];

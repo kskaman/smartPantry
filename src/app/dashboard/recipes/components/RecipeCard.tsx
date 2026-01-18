@@ -1,7 +1,5 @@
 import { RecipeOverview } from "@/types/recipes";
-
 import { Button, Card } from "@/ui/components";
-
 import Image from "next/image";
 import Link from "next/link";
 
@@ -22,7 +20,16 @@ export default function RecipeCard({ recipe }: { recipe: RecipeOverview }) {
           </div>
         )}
 
-        <h4 className="text-subheading">{recipe.title}</h4>
+        <div className="flex flex-col gap-2">
+          <h4 className="text-subheading">{recipe.title}</h4>
+
+          {recipe.matchedIngredientsNum && (
+            <p className="text-caption">{recipe.matchedIngredientsNum}</p>
+          )}
+          {recipe.expiringIngredientsNum && (
+            <p className="text-caption">{recipe.expiringIngredientsNum}</p>
+          )}
+        </div>
 
         <Link
           href={`/dashboard/recipes/${recipe.id}`}

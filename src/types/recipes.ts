@@ -3,9 +3,9 @@ export interface RecipeOverview {
   id: string;
   title: string;
   image: string;
-  // matchedIngredients?: string[];
-  // unMatchedIngredients?: string[];
-  matchScore?: number;
+  totalScore?: number;
+  matchedIngredientsNum?: number;
+  expiringIngredientsNum?: number;
 }
 
 // MealDB API response types

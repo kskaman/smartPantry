@@ -3,9 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useRecipeDetail } from "@/hooks/use-recipes";
 import { ArrowLeft, ExternalLink, ChefHat, Globe, Tag } from "lucide-react";
-import { Badge, Button } from "@/ui/components";
+import { Badge, Button, Card, Loader } from "@/ui/components";
 import Image from "next/image";
-import DotLoader from "@/components/ui/DotLoader";
 
 interface RecipeDetailClientProps {
   recipeId: string;
@@ -18,15 +17,16 @@ export function RecipeDetailClient({ recipeId }: RecipeDetailClientProps) {
   if (isLoading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        <Button variant="secondary" onClick={() => router.back()}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
-        </Button>
+        <Button
+          variant="icon"
+          onClick={() => router.back()}
+          icon={<ArrowLeft className="h-6 w-6" />}
+        />
 
-        <div className="text-center py-12 flex flex-col items-center text-muted-foreground mt-2">
+        <Card>
           Loading recipe
-          <DotLoader className="mb-4" />
-        </div>
+          <Loader />
+        </Card>
       </div>
     );
   }
@@ -35,14 +35,13 @@ export function RecipeDetailClient({ recipeId }: RecipeDetailClientProps) {
     return (
       <div className="min-h-screen bg-background">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-          <Button variant="secondary" onClick={() => router.back()}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
-          </Button>
+          <Button
+            variant="icon"
+            onClick={() => router.back()}
+            icon={<ArrowLeft className="h-6 w-6" />}
+          />
 
-          <div className="text-center py-16 sm:py-24 text-red-500 text-lg">
-            Recipe not found
-          </div>
+          <Card>Recipe not found</Card>
         </div>
       </div>
     );
@@ -183,12 +182,27 @@ export function RecipeDetailClient({ recipeId }: RecipeDetailClientProps) {
 
               <div>
                 <div className="prose prose-base max-w-none">
-                  {recipe.strInstructions
-                    .split("\r\n")
-                    .map((paragraph, index) => {
-                      const trimmed = paragraph.trim();
-                      if (!trimmed) return null;
-                      return (
+                  {(() => {
+                    let steps;
+
+                    // Check for \r\n, \n, or \r and split accordingly
+                    if (/\r\n/.test(recipe.strInstructions)) {
+                      steps = recipe.strInstructions.split(/\r\n/);
+                    } else if (/\n/.test(recipe.strInstructions)) {
+                      steps = recipe.strInstructions.split(/\n/);
+                    } else if (/\r/.test(recipe.strInstructions)) {
+                      steps = recipe.strInstructions.split(/\r/);
+                    } else {
+                      // Fallback: split by sentences
+                      steps =
+                        recipe.strInstructions.split(/\.(?=\s+[A-Z])|\.$/);
+                    }
+
+                    return steps
+                      .map((step) => step.trim())
+                      .filter((step) => step.length > 0)
+                      .filter((step) => !/^\s*step\s*\d+\s*:?\s*$/i.test(step)) // remove label-only steps
+                      .map((step, index) => (
                         <p
                           key={index}
                           className="mb-4 text-base leading-relaxed"
@@ -196,10 +210,10 @@ export function RecipeDetailClient({ recipeId }: RecipeDetailClientProps) {
                           <span className="text-semibold text-orange-500">
                             {index + 1}.{" "}
                           </span>
-                          {trimmed}
+                          {step}
                         </p>
-                      );
-                    })}
+                      ));
+                  })()}
                 </div>
               </div>
             </div>

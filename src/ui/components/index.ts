@@ -9,3 +9,4 @@ export { default as Badge } from "./Badge";
 export { default as ConfirmModal } from "./ConfirmModal";
 export { default as Select } from "./Select";
 export { CustomModal } from "./CustomModal";
+export { default as Pagination } from "./Pagination";
