@@ -1,14 +1,15 @@
 "use client";
 
+import { Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Button } from "@/ui/components";
+import { Button, Loader } from "@/ui/components";
 import SearchRecipes from "./components/SearchRecipes";
 import RecipeSuggestions from "./components/RecipeSuggestions";
 import SavedRecipes from "./components/SavedRecipes";
 
 type TabType = "search" | "suggestions" | "saved";
 
-export default function RecipesPage() {
+function RecipesContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -26,14 +27,7 @@ export default function RecipesPage() {
   ];
 
   return (
-    <div className="flex flex-col gap-5">
-      <div className="space-y-2">
-        <h1 className="text-title">Recipes</h1>
-        <p className="text-small">
-          Search for recipes or Get recipe suggestions based on your inventory
-        </p>
-      </div>
-
+    <>
       {/* Tab Navigation */}
       <div className="flex gap-2">
         {tabs.map((tab) => (
@@ -51,6 +45,29 @@ export default function RecipesPage() {
       {activeTab === "search" && <SearchRecipes />}
       {activeTab === "suggestions" && <RecipeSuggestions />}
       {activeTab === "saved" && <SavedRecipes />}
+    </>
+  );
+}
+
+export default function RecipesPage() {
+  return (
+    <div className="flex flex-col gap-5">
+      <div className="space-y-2">
+        <h1 className="text-title">Recipes</h1>
+        <p className="text-small">
+          Search for recipes or Get recipe suggestions based on your inventory
+        </p>
+      </div>
+
+      <Suspense
+        fallback={
+          <div className="flex justify-center py-8">
+            <Loader />
+          </div>
+        }
+      >
+        <RecipesContent />
+      </Suspense>
     </div>
   );
 }
