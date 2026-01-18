@@ -4,8 +4,10 @@ export interface RecipeOverview {
   title: string;
   image: string;
   totalScore?: number;
-  matchedIngredientsNum?: number;
-  expiringIngredientsNum?: number;
+  matchedIngredientsCount?: number;
+  totalIngredientsCount?: number;
+  expiringIngredientsCount?: number;
+  expiringIngredients?: string[];
 }
 
 // MealDB API response types
@@ -63,6 +65,7 @@ export interface MealDBMeal {
   strImageSource: string | null;
   strCreativeCommonsConfirmed: string | null;
   dateModified: string | null;
+  isSaved?: boolean;
 }
 
 export interface MealDBSearchResponse {

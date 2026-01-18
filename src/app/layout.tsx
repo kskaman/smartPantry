@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "@/components/ui/sonner";
+import { Toaster } from "@/ui/components";
 import { QueryProvider } from "@/providers/query-provider";
 
 const geistSans = Geist({
@@ -44,7 +44,7 @@ export default function RootLayout({
       <body className={`antialiased`}>
         <QueryProvider>
           {children}
-          <Toaster richColors position="top-right" />
+          <Toaster />
         </QueryProvider>
       </body>
     </html>

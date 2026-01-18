@@ -10,3 +10,4 @@ export { default as ConfirmModal } from "./ConfirmModal";
 export { default as Select } from "./Select";
 export { CustomModal } from "./CustomModal";
 export { default as Pagination } from "./Pagination";
+export { Toaster } from "./toaster";

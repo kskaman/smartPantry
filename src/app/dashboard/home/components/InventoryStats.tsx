@@ -1,9 +1,7 @@
 "use client";
 
-import { CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Card } from "@/ui/components";
-import { useInventoryStats } from "@/hooks/useInventoryStats";
+import { useInventoryStats } from "@/hooks/use-inventory-stats";
 import { AlertCircle, CheckCircle2, Clock, Package } from "lucide-react";
 
 export function InventoryStats() {
@@ -45,17 +43,17 @@ export function InventoryStats() {
       <div className="grid grid-cols-2 gap-3 sm:gap-4">
         {/* Fresh Items */}
         <Card>
-          <CardContent className="p-4">
+          <div className="p-4">
             <div className="flex items-center justify-between mb-2">
-              <Badge
-                className="text-xs px-2 py-0.5"
+              <span
+                className="text-small px-2 py-0.5 rounded-md"
                 style={{
                   backgroundColor: "#d1fae5",
                   color: "var(--text-success)",
                 }}
               >
                 Fresh
-              </Badge>
+              </span>
               <CheckCircle2
                 className="h-4 w-4"
                 style={{ color: "var(--text-success)" }}
@@ -63,7 +61,7 @@ export function InventoryStats() {
             </div>
 
             <p
-              className="text-2xl sm:text-3xl font-bold mb-1"
+              className="text-caption mb-1"
               style={{ color: "var(--text-value)" }}
             >
               {isLoading ? "--" : fresh}
@@ -76,27 +74,27 @@ export function InventoryStats() {
               {isLoading
                 ? "Loading..."
                 : fresh === 0
-                ? "No fresh items"
-                : fresh === 1
-                ? "Fresh item"
-                : "Fresh items"}
+                  ? "No fresh items"
+                  : fresh === 1
+                    ? "Fresh item"
+                    : "Fresh items"}
             </p>
-          </CardContent>
+          </div>
         </Card>
 
         {/* Expiring Soon */}
         <Card>
-          <CardContent className="p-4">
+          <div className="p-4">
             <div className="flex items-center justify-between mb-2">
-              <Badge
-                className="text-xs px-2 py-0.5"
+              <span
+                className="text-small px-2 py-0.5 rounded-md"
                 style={{
                   backgroundColor: "#fef3c7",
                   color: "var(--text-warning)",
                 }}
               >
                 Soon
-              </Badge>
+              </span>
               <Clock
                 className="h-4 w-4"
                 style={{ color: "var(--text-warning)" }}
@@ -117,25 +115,25 @@ export function InventoryStats() {
               {isLoading
                 ? "Checking..."
                 : expiringSoon > 0
-                ? "Use soon"
-                : "None expiring"}
+                  ? "Use soon"
+                  : "None expiring"}
             </p>
-          </CardContent>
+          </div>
         </Card>
 
         {/* Expired */}
         <Card>
-          <CardContent className="p-4">
+          <div className="p-4">
             <div className="flex items-center justify-between mb-2">
-              <Badge
-                className="text-xs px-2 py-0.5"
+              <span
+                className="text-small px-2 py-0.5 rounded-md"
                 style={{
                   backgroundColor: "#fee2e2",
                   color: "var(--text-danger)",
                 }}
               >
                 Expired
-              </Badge>
+              </span>
               <AlertCircle
                 className="h-4 w-4"
                 style={{ color: "var(--text-danger)" }}
@@ -156,25 +154,25 @@ export function InventoryStats() {
               {isLoading
                 ? "Checking..."
                 : expired > 0
-                ? "Remove now"
-                : "All good!"}
+                  ? "Remove now"
+                  : "All good!"}
             </p>
-          </CardContent>
+          </div>
         </Card>
 
         {/* Total Inventory */}
         <Card>
-          <CardContent className="p-4">
+          <div className="p-4">
             <div className="flex items-center justify-between mb-2">
-              <Badge
-                className="text-xs px-2 py-0.5"
+              <span
+                className="text-small px-2 py-0.5 rounded-md"
                 style={{
                   backgroundColor: "#e0e7ff",
                   color: "var(--text-info)",
                 }}
               >
                 Total
-              </Badge>
+              </span>
               <Package
                 className="h-4 w-4"
                 style={{ color: "var(--text-info)" }}
@@ -195,12 +193,12 @@ export function InventoryStats() {
               {isLoading
                 ? "Loading..."
                 : total === 0
-                ? "Add items"
-                : total === 1
-                ? "Item tracked"
-                : "Items tracked"}
+                  ? "Add items"
+                  : total === 1
+                    ? "Item tracked"
+                    : "Items tracked"}
             </p>
-          </CardContent>
+          </div>
         </Card>
       </div>
     </div>

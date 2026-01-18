@@ -80,6 +80,7 @@ export async function filterMealsByIngredient(
     return [];
   }
 
+  ingredient = ingredient.trim();
   try {
     const response = await fetch(
       `${MEAL_DB_BASE_URL}/filter.php?i=${encodeURIComponent(ingredient)}`,
@@ -93,50 +94,5 @@ export async function filterMealsByIngredient(
     return data.meals || [];
   } catch {
     return [];
-  }
-}
-
-/**
- * Search for recipes by multiple ingredients (OR logic)
- * Searches each ingredient individually and returns unique meals with full details
- * @param ingredients - Array of ingredient names
- * @returns Array of full meal details
- */
-export async function searchMealsByIngredients(
-  ingredients: string[],
-): Promise<MealDBMeal[]> {
-  if (!MEAL_DB_API_KEY) {
-    throw new Error("MEAL_DB_API_KEY is not configured");
-  }
-
-  if (!ingredients.length) {
-    return [];
-  }
-
-  try {
-    const mealIdsSet = new Set<string>();
-
-    // Search each ingredient separately (OR logic)
-    await Promise.all(
-      ingredients.map(async (ingredient) => {
-        const partialMeals = await filterMealsByIngredient(ingredient);
-        partialMeals.forEach((meal) => mealIdsSet.add(meal.idMeal));
-      }),
-    );
-
-    if (mealIdsSet.size === 0) {
-      return [];
-    }
-
-    // Fetch full details for all unique meal IDs
-    const fullMeals = await Promise.all(
-      Array.from(mealIdsSet).map((id) => getMealById(id)),
-    );
-
-    // Filter out any null results
-    return fullMeals.filter((meal): meal is MealDBMeal => meal !== null);
-  } catch (error) {
-    console.error("Error searching meals by ingredients:", error);
-    throw error;
   }
 }

@@ -3,13 +3,12 @@
  * Export all custom hooks from this file for easy imports
  */
 
-export { useDebounce } from "./useDebounce";
-export { useInventoryStats } from "./useInventoryStats";
+export { useDebounce } from "./use-debounce";
+export { useInventoryStats } from "./use-inventory-stats";
 export { useSearch } from "./use-search";
 
 // Auth hooks
-export { useUser, useSession } from "./useAuth";
+export { useUser, useSession } from "./use-auth";
 
 // item hooks
-export { useItems } from "./useItems";
-export { useItemMutations } from "./useItemMutations";
+export { useItems, useItemMutations } from "./use-Items";

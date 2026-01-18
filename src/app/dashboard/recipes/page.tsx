@@ -4,7 +4,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "@/ui/components";
 import SearchRecipes from "./components/SearchRecipes";
 import RecipeSuggestions from "./components/RecipeSuggestions";
-// import SavedRecipes from "./components/SavedRecipes";
+import SavedRecipes from "./components/SavedRecipes";
 
 type TabType = "search" | "suggestions" | "saved";
 
@@ -50,9 +50,7 @@ export default function RecipesPage() {
       {/* Tab Content */}
       {activeTab === "search" && <SearchRecipes />}
       {activeTab === "suggestions" && <RecipeSuggestions />}
-      {/*{activeTab === "saved" && (
-        <SavedRecipes />
-      )} */}
+      {activeTab === "saved" && <SavedRecipes />}
     </div>
   );
 }

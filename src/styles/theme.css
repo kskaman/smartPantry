@@ -88,4 +88,31 @@
   --input-item-icon-color: #2b303b;
   /* warning text color */
   --warning-color: #fb3748;
+
+  /* Toast / Notification */
+  --toast-bg: #ffffff;
+  --toast-border: #e1ecea;
+  --toast-text: var(--text-main);
+  --toast-shadow: rgba(0, 0, 0, 0.1);
+
+  /* Toast variants */
+  --toast-success-bg: #ecfdf5;
+  --toast-success-border: #059669;
+  --toast-success-text: #047857;
+  --toast-success-icon: #10b981;
+
+  --toast-error-bg: #fef2f2;
+  --toast-error-border: #dc2626;
+  --toast-error-text: #991b1b;
+  --toast-error-icon: #ef4444;
+
+  --toast-warning-bg: #fffbeb;
+  --toast-warning-border: #d97706;
+  --toast-warning-text: #92400e;
+  --toast-warning-icon: #f59e0b;
+
+  --toast-info-bg: #eff6ff;
+  --toast-info-border: #2563eb;
+  --toast-info-text: #1e40af;
+  --toast-info-icon: #3b82f6;
 }

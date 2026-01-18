@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { useDebounce } from "./useDebounce";
+import { useDebounce } from "./use-debounce";
 
 interface UseSearchOptions {
   debounceMs?: number;

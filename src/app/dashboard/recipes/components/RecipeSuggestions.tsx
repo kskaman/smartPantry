@@ -17,7 +17,6 @@ export default function RecipeSuggestions() {
 
   // Fetch recipes with match scores
   const { recipes, isLoading, error } = useRecipeSuggestions();
-  console.log("Fetched recipe suggestions:", recipes);
   // Read from URL
   const urlSearchQuery = searchParams.get("query") || "";
   const currentPage = parseInt(searchParams.get("page") || "1", 10);
@@ -157,10 +156,10 @@ export default function RecipeSuggestions() {
       {hasSearched && filteredRecipes.length === 0 ? (
         <Card>
           <Search className="h-12 w-12 mx-auto mb-4" />
-          <p className="text-lg mb-2">
+          <p className="text-body mb-2">
             No recipes found for &quot;{urlSearchQuery}&quot;
           </p>
-          <p className="text-sm">
+          <p className="text-small">
             Try different keywords or clear the search to see all suggestions
           </p>
         </Card>

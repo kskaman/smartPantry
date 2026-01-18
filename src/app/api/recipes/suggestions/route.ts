@@ -3,11 +3,19 @@ import { createServerClient } from "@/lib/supabase/server";
 import { RecipeOverview, MealDBMeal } from "@/types/recipes";
 import { filterMealsByIngredient, getMealById } from "@/lib/mealdb";
 import { getApiUser } from "@/lib/auth";
-import { Item } from "@/types/database";
 import { getExpiryStatus } from "@/lib/expiry-utils";
 
-interface IngredientWithExpiry extends Item {
+interface IngredientWithExpiry {
+  name: string;
+  expiry_date: string | null;
   daysRemaining: number;
+}
+
+/**
+ * Normalize ingredient names for consistent matching
+ */
+function normalizeName(name: string): string {
+  return name.toLowerCase().trim();
 }
 
 /**
@@ -18,7 +26,7 @@ function extractMealIngredients(meal: MealDBMeal): string[] {
   for (let i = 1; i <= 20; i++) {
     const ingredient = meal[`strIngredient${i}` as keyof MealDBMeal] as string;
     if (ingredient && ingredient.trim()) {
-      ingredients.push(ingredient.trim().toLowerCase());
+      ingredients.push(normalizeName(ingredient));
     }
   }
   return ingredients;
@@ -29,49 +37,46 @@ function extractMealIngredients(meal: MealDBMeal): string[] {
  */
 function calculateRecipeScore(
   recipeIngredients: string[],
-  userIngredients: Map<string, IngredientWithExpiry>,
-  expiringIngredients: Map<string, IngredientWithExpiry>,
+  userIngredients: IngredientWithExpiry[],
 ): {
-  expiringUsed: number;
-  urgencyScore: number;
-  matchPercentage: number;
-  missingCount: number;
+  totalIngredientsCount: number;
+  expiringIngredientsCount: number;
   totalScore: number;
-  matchedIngredients: string[];
+  matchedIngredientsCount: number;
+  expiringIngredients: string[];
 } {
   let expiringUsed = 0;
   let urgencyScore = 0;
   let matchedCount = 0;
-  const matchedIngredients: string[] = [];
+  const expiringIngredients: string[] = [];
 
   // Check each recipe ingredient
-  recipeIngredients.forEach((recipeIng) => {
-    const recipeIngLower = recipeIng.toLowerCase().trim();
-
+  outerLoop: for (const recipeIngredient of recipeIngredients) {
     // Check if we have this ingredient
-    for (const [userIngName, userIng] of userIngredients.entries()) {
-      const userIngLower = userIngName.toLowerCase();
+    for (const userIngredient of userIngredients) {
+      const ingredientName = userIngredient.name;
+      const ingredientDaysRemaining = userIngredient.daysRemaining;
 
       // Fuzzy match: exact, contains, or word match
       if (
-        recipeIngLower === userIngLower ||
-        recipeIngLower.includes(userIngLower) ||
-        userIngLower.includes(recipeIngLower)
+        recipeIngredient === ingredientName ||
+        recipeIngredient.includes(ingredientName) ||
+        ingredientName.includes(recipeIngredient)
       ) {
         matchedCount++;
-        matchedIngredients.push(userIngName);
+
+        // More urgent = higher score (0 days = 8 points, 7 days = 1 point)
+        urgencyScore += Math.max(0, 8 - ingredientDaysRemaining);
 
         // Check if this ingredient is expiring
-        if (expiringIngredients.has(userIngName)) {
+        if (ingredientDaysRemaining <= 7) {
           expiringUsed++;
-          const daysRemaining = userIng.daysRemaining;
-          // More urgent = higher score (0 days = 8 points, 7 days = 1 point)
-          urgencyScore += Math.max(0, 8 - daysRemaining);
+          expiringIngredients.push(recipeIngredient);
         }
-        break; // Found match, move to next recipe ingredient
+        continue outerLoop; // Found match, move to next recipe ingredient
       }
     }
-  });
+  }
 
   const matchPercentage =
     recipeIngredients.length > 0 ? matchedCount / recipeIngredients.length : 0;
@@ -89,12 +94,11 @@ function calculateRecipeScore(
     missingCount * 5;
 
   return {
-    expiringUsed,
-    urgencyScore,
-    matchPercentage,
-    missingCount,
+    expiringIngredientsCount: expiringUsed,
+    matchedIngredientsCount: matchedCount,
+    totalIngredientsCount: recipeIngredients.length,
     totalScore,
-    matchedIngredients,
+    expiringIngredients,
   };
 }
 
@@ -111,9 +115,10 @@ export async function GET() {
 
     // Get user's inventory items sorted by expiry date
     // (ascending - most urgent first)
+    // Only select columns we need for performance
     const { data: userItems, error: itemsError } = await supabase
       .from("items")
-      .select("*")
+      .select("name, expiry_date")
       .eq("user_id", user.id)
       .gte("expiry_date", new Date().toISOString())
       .order("expiry_date", { ascending: true });
@@ -129,58 +134,50 @@ export async function GET() {
       return NextResponse.json([]);
     }
 
-    // Separate expiring (≤7 days) and fresh items with days remaining
-    const expiringItems: IngredientWithExpiry[] = [];
-    const freshItems: IngredientWithExpiry[] = [];
+    // Separate expiring ( <= 7 days) and fresh items with days remaining
+    const expiringItems: string[] = [];
+    const freshItems: string[] = [];
+    const userIngredients: IngredientWithExpiry[] = [];
 
-    userItems.forEach((item) => {
-      const status = getExpiryStatus(item.expiry_date);
+    userItems.forEach(({ name, expiry_date }) => {
+      const status = getExpiryStatus(expiry_date);
       if (!status || status.isExpired) return; // Skip expired items
 
       const itemWithExpiry: IngredientWithExpiry = {
-        ...item,
+        name: normalizeName(name),
+        expiry_date: expiry_date,
         daysRemaining: status.daysRemaining,
       };
 
+      userIngredients.push(itemWithExpiry);
+
       if (status.daysRemaining <= 7) {
-        expiringItems.push(itemWithExpiry);
+        expiringItems.push(name);
       } else {
-        freshItems.push(itemWithExpiry);
+        freshItems.push(name);
       }
     });
 
     // Phase 1: Progressive recipe collection from expiring ingredients
     const mealIdsSet = new Set<string>();
-    const MAX_RECIPE_IDS = 100;
-
-    console.log(
-      `Searching recipes for ${expiringItems.length} expiring ingredients`,
-    );
+    const MAX_RECIPE_IDS = 80;
 
     for (const item of expiringItems) {
       if (mealIdsSet.size >= MAX_RECIPE_IDS) break;
 
-      const partialMeals = await filterMealsByIngredient(item.name);
+      const partialMeals = await filterMealsByIngredient(item);
       partialMeals.forEach((meal) => mealIdsSet.add(meal.idMeal));
-
-      console.log(
-        `After ${item.name}: ${mealIdsSet.size} unique recipes collected`,
-      );
     }
 
-    // Phase 2: If < 50 recipes, search top fresh ingredients
+    // Phase 2: If < 80 recipes, search top fresh ingredients
     if (mealIdsSet.size < MAX_RECIPE_IDS && freshItems.length > 0) {
-      console.log("Supplementing with fresh ingredients...");
-
-      for (const item of freshItems.slice(0, 5)) {
+      for (const item of freshItems) {
         if (mealIdsSet.size >= MAX_RECIPE_IDS) break;
 
-        const partialMeals = await filterMealsByIngredient(item.name);
+        const partialMeals = await filterMealsByIngredient(item);
         partialMeals.forEach((meal) => mealIdsSet.add(meal.idMeal));
       }
     }
-
-    console.log(`Total unique recipe IDs collected: ${mealIdsSet.size}`);
 
     if (mealIdsSet.size === 0) {
       return NextResponse.json([]);
@@ -195,47 +192,34 @@ export async function GET() {
       (meal): meal is MealDBMeal => meal !== null,
     );
 
-    console.log(`Fetched full details for ${validMeals.length} recipes`);
-
-    // Create lookup maps for scoring
-    const userIngredientsMap = new Map<string, IngredientWithExpiry>();
-    const expiringIngredientsMap = new Map<string, IngredientWithExpiry>();
-
-    [...expiringItems, ...freshItems].forEach((item) => {
-      userIngredientsMap.set(item.name, item);
-    });
-
-    expiringItems.forEach((item) => {
-      expiringIngredientsMap.set(item.name, item);
-    });
-
     // Phase 4: Calculate scores for all recipes
     const recipesWithScores: RecipeOverview[] = validMeals.map((meal) => {
       const recipeIngredients = extractMealIngredients(meal);
-      const scores = calculateRecipeScore(
-        recipeIngredients,
-        userIngredientsMap,
-        expiringIngredientsMap,
-      );
+      const scores = calculateRecipeScore(recipeIngredients, userIngredients);
 
       return {
         id: meal.idMeal,
         title: meal.strMeal,
         image: meal.strMealThumb,
-        matchScore: scores.matchPercentage,
         totalScore: scores.totalScore,
-        matchedIngredients: scores.matchedIngredients,
+        totalIngredientsCount: scores.totalIngredientsCount,
+        matchedIngredientsCount: scores.matchedIngredientsCount,
+        expiringIngredientsCount: scores.expiringIngredientsCount,
+        expiringIngredients: scores.expiringIngredients,
       };
     });
 
     // Phase 5: Sort by total score and return top 60
     recipesWithScores.sort((a, b) => b.totalScore! - a.totalScore!);
 
-    console.log(
-      `Returning top 60 of ${recipesWithScores.length} scored recipes`,
-    );
+    const topRecipes = recipesWithScores.slice(0, 48);
 
-    return NextResponse.json(recipesWithScores.slice(0, 60));
+    // Cache for 5 minutes since inventory doesn't change frequently
+    return NextResponse.json(topRecipes, {
+      headers: {
+        "Cache-Control": "private, max-age=300, stale-while-revalidate=600",
+      },
+    });
   } catch {
     return NextResponse.json(
       { error: "Internal server error" },

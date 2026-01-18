@@ -114,7 +114,7 @@ export default function Pagination({
 
               return (
                 <button
-                  key={page}
+                  key={`page-${page}`}
                   onClick={() => onPageChange(page as number)}
                   className="px-3 py-1.5 text-small rounded-[8px] transition-colors"
                   style={{

@@ -1,10 +1,23 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useRecipeDetail } from "@/hooks/use-recipes";
-import { ArrowLeft, ExternalLink, ChefHat, Globe, Tag } from "lucide-react";
+import {
+  useRecipeDetail,
+  useToggleSaveRecipe,
+} from "@/hooks/use-recipes";
+import {
+  ArrowLeft,
+  ExternalLink,
+  ChefHat,
+  Globe,
+  Tag,
+  Bookmark,
+  BookmarkCheck,
+} from "lucide-react";
 import { Badge, Button, Card, Loader } from "@/ui/components";
 import Image from "next/image";
+import { toast } from "@/lib/toast";
 
 interface RecipeDetailClientProps {
   recipeId: string;
@@ -13,6 +26,38 @@ interface RecipeDetailClientProps {
 export function RecipeDetailClient({ recipeId }: RecipeDetailClientProps) {
   const router = useRouter();
   const { recipe, isLoading, error } = useRecipeDetail(recipeId);
+  const [isSaving, setIsSaving] = useState(false);
+  const { saveMutation, unsaveMutation } = useToggleSaveRecipe(recipeId);
+
+  const handleSaveToggle = async () => {
+    if (!recipe) return;
+
+    setIsSaving(true);
+
+    try {
+      if (recipe.isSaved) {
+        // Unsave
+        await unsaveMutation.mutateAsync(recipeId);
+        toast.success("Recipe removed from saved");
+      } else {
+        // Save
+        const result = await saveMutation.mutateAsync({
+          recipeId: recipe.idMeal,
+          recipeTitle: recipe.strMeal,
+          recipeImage: recipe.strMealThumb,
+        });
+        if (result.alreadySaved) {
+          toast.info("Recipe already saved");
+        } else {
+          toast.success("Recipe saved");
+        }
+      }
+    } catch {
+      toast.error("Something went wrong");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -79,13 +124,28 @@ export function RecipeDetailClient({ recipeId }: RecipeDetailClientProps) {
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-      {/* Header with Back Button */}
-      <div className="flex items-center mb-6">
+      {/* Header with Back Button and Save Button */}
+      <div className="flex items-center justify-between mb-6">
         <Button
           variant="icon"
           onClick={() => router.back()}
           icon={<ArrowLeft className="h-6 w-6" />}
         />
+
+        <Button
+          variant={recipe.isSaved ? "secondary" : "primary"}
+          onClick={handleSaveToggle}
+          disabled={isSaving}
+          icon={
+            recipe.isSaved ? (
+              <BookmarkCheck className="h-5 w-5" />
+            ) : (
+              <Bookmark className="h-5 w-5" />
+            )
+          }
+        >
+          {isSaving ? "..." : recipe.isSaved ? "UnSave Recipe" : "Save Recipe"}
+        </Button>
       </div>
 
       <div className="flex flex-col lg:gap-8 gap-4 overflow-auto">
