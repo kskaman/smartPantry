@@ -15,7 +15,7 @@ export default function DashboardLayout({
   return (
     <div className="min-h-screen bg-[var(--main-page-bg)] flex">
       {/* Sidebar – md+ */}
-      <aside className="hidden md:flex">
+      <aside className="hidden md:flex sticky top-0 h-screen">
         <Sidebar expanded={expanded} setExpanded={setExpanded} />
         {/* Divider to the right of sidebar */}
         <Divider orientation="vertical" />

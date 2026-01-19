@@ -220,7 +220,9 @@ export function RecipeDetailClient({ recipeId }: RecipeDetailClientProps) {
                       key={index}
                       className="flex items-center gap-3 justify-center text-medium"
                     >
-                      <span className="text-orange-500 font-bold mt-1">-</span>
+                      <span className="font-bold mt-1 text-(--text-warning)">
+                        -
+                      </span>
                       <span className="flex-1">
                         <span className="text-body-medium">
                           {ingredient.measure}
