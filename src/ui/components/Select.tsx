@@ -112,10 +112,10 @@ export default function Select({
 
   const sizeClasses =
     size === "sm"
-      ? "px-3 py-1 text-sm"
+      ? "px-3 py-1 text-small"
       : size === "lg"
-      ? "px-4 py-3 text-base"
-      : "px-3 py-2 text-sm";
+      ? "px-4 py-3 text-body"
+      : "px-3 py-2 text-small";
 
   const selected = options.find((o) => o.value === value) || null;
 
@@ -136,8 +136,9 @@ export default function Select({
       >
         <span
           className={`truncate ${
-            selected ? "text-body-medium" : "text-caption text-muted-foreground"
+            selected ? "text-body-medium" : "text-caption"
           }`}
+          style={!selected ? { color: "var(--text-muted)" } : undefined}
         >
           {selected
             ? selected.label

@@ -29,7 +29,10 @@ export default function RecipeCard({ recipe }: { recipe: RecipeOverview }) {
           {/* Matched ingredients info */}
           {recipe.matchedIngredientsCount !== undefined &&
             recipe.totalIngredientsCount !== undefined && (
-              <p className="text-small text-green-600 flex flex-row items-center gap-1">
+              <p
+                className="text-small flex flex-row items-center gap-1"
+                style={{ color: "var(--text-success)" }}
+              >
                 <ThumbsUp className="w-4 h-4" />{" "}
                 {recipe.matchedIngredientsCount}/{recipe.totalIngredientsCount}{" "}
                 ingredients available
@@ -41,7 +44,7 @@ export default function RecipeCard({ recipe }: { recipe: RecipeOverview }) {
             <div className="flex flex-col gap-1">
               <Badge
                 variant="secondary"
-                className="bg-orange-100 text-orange-800 w-fit flex flex-row gap-1"
+                className="w-fit flex flex-row gap-1 bg-[#fef3c7] text-[var(--text-warning)]"
               >
                 <AlarmClock className="w-4 h-4" />
                 {recipe.expiringIngredientsCount} expiring ingredient

@@ -27,10 +27,10 @@ export function InventoryStats() {
         >
           <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
           <div className="flex-1">
-            <h3 className="font-semibold text-sm mb-1">
+            <h3 className="text-body-medium mb-1">
               Action Required: Remove Expired Items
             </h3>
-            <p className="text-sm opacity-90">
+            <p className="text-small opacity-90">
               You have {expired} expired {expired === 1 ? "item" : "items"} in
               your inventory. Please remove or replace them to maintain food
               safety.
@@ -61,14 +61,14 @@ export function InventoryStats() {
             </div>
 
             <p
-              className="text-caption mb-1"
+              className="text-title mb-1"
               style={{ color: "var(--text-value)" }}
             >
               {isLoading ? "--" : fresh}
             </p>
 
             <p
-              className="text-xs sm:text-sm"
+              className="text-caption"
               style={{ color: "var(--text-tertiary)" }}
             >
               {isLoading
@@ -102,7 +102,7 @@ export function InventoryStats() {
             </div>
 
             <p
-              className="text-2xl sm:text-3xl font-bold mb-1"
+              className="text-title mb-1"
               style={{ color: "var(--text-value)" }}
             >
               {isLoading ? "--" : expiringSoon}
@@ -141,7 +141,7 @@ export function InventoryStats() {
             </div>
 
             <p
-              className="text-2xl sm:text-3xl font-bold mb-1"
+              className="text-title mb-1"
               style={{ color: "var(--text-value)" }}
             >
               {isLoading ? "--" : expired}
@@ -180,7 +180,7 @@ export function InventoryStats() {
             </div>
 
             <p
-              className="text-2xl sm:text-3xl font-bold mb-1"
+              className="text-title mb-1"
               style={{ color: "var(--text-value)" }}
             >
               {isLoading ? "--" : total}

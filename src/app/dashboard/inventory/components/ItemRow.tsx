@@ -31,7 +31,7 @@ export default function ItemRow({
           {/* Name row */}
           <div className="flex items-center justify-between gap-2 items-center">
             <h3
-              className="text-base sm:text-lg font-semibold break-words"
+              className="text-subheading break-words"
               style={{ color: "var(--text-title)" }}
             >
               {item.name}
@@ -68,7 +68,7 @@ export default function ItemRow({
           {/* Info row: Quantity and Expiry on left, buttons on right */}
           <div
             className="flex items-center justify-between gap-2 w-full
-          flex-wrap gap-y-1 text-sm"
+          flex-wrap gap-y-1 text-small"
           >
             <span style={{ color: "var(--text-label)" }}>
               Quantity:{" "}
@@ -85,7 +85,7 @@ export default function ItemRow({
             </span>
             {item.expiry_date && (
               <span
-                className="font-medium"
+                className="text-small"
                 style={{ color: "var(--text-label)" }}
               >
                 Expires:{" "}

@@ -93,7 +93,7 @@ const Button = memo(
           <>
             {isIconOnly && icon}
             {isTextOnly && (
-              <span className="text-base text-nowrap">{children}</span>
+              <span className="text-body text-nowrap">{children}</span>
             )}
             {isRegular && (
               <>

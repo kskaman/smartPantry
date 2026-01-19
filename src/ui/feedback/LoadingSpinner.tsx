@@ -38,12 +38,16 @@ const LoadingSpinner = ({
         {...props}
       >
         <div
-          className={`${spinnerSizes[size]} border-2 border-gray-200 border-t-blue-600 rounded-full animate-spin`}
+          className={`${spinnerSizes[size]} border-2 rounded-full animate-spin`}
+          style={{
+            borderColor: "var(--text-tertiary)",
+            borderTopColor: "var(--text-info)",
+          }}
           role="status"
           aria-label="Loading"
         />
         {message && (
-          <p className="text-sm text-(--subheading-text-1) animate-pulse">
+          <p className="text-small animate-pulse" style={{ color: "var(--text-secondary)" }}>
             {message}
           </p>
         )}
@@ -61,7 +65,7 @@ const LoadingSpinner = ({
           className={`${sizeClasses[size]} rounded-full bg-(--secondary-main) animate-pulse`}
         />
         {message && (
-          <p className="text-sm text-(--subheading-text-1) animate-pulse">
+          <p className="text-small animate-pulse" style={{ color: "var(--text-secondary)" }}>
             {message}
           </p>
         )}
@@ -87,7 +91,7 @@ const LoadingSpinner = ({
         ></div>
       </div>
       {message && (
-        <p className="text-sm text-(--subheading-text-1) animate-pulse">
+        <p className="text-small animate-pulse" style={{ color: "var(--text-secondary)" }}>
           {message}
         </p>
       )}

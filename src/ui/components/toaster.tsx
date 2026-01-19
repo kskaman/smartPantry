@@ -76,7 +76,7 @@ function ToastItem({ toast, onDismiss }: ToastItemProps) {
       }}
     >
       <div className="flex-shrink-0">{icons[toast.type]}</div>
-      <p className="flex-1 text-sm font-medium">{toast.message}</p>
+      <p className="flex-1 text-small">{toast.message}</p>
       <button
         onClick={() => {
           setIsExiting(true);

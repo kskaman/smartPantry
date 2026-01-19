@@ -136,7 +136,7 @@ export default function SearchRecipes() {
       {!isLoading && !error && hasSearched && allRecipes.length > 0 && (
         <>
           <div className="mb-4">
-            <h3 className="text-lg font-semibold">
+            <h3 className="text-subheading">
               Found {allRecipes.length} recipe
               {allRecipes.length !== 1 ? "s" : ""} for &quot;{urlSearchQuery}
               &quot;
@@ -163,10 +163,10 @@ export default function SearchRecipes() {
       {!isLoading && !error && hasSearched && allRecipes.length === 0 && (
         <Card>
           <Search className="h-12 w-12 mx-auto mb-4" />
-          <p className="text-lg mb-2">
+          <p className="text-subheading mb-2">
             No recipes found for &quot;{urlSearchQuery}&quot;
           </p>
-          <p className="text-sm">
+          <p className="text-small">
             Try searching with different keywords or check your spelling
           </p>
         </Card>
@@ -175,9 +175,9 @@ export default function SearchRecipes() {
       {/* Initial State */}
       {!isLoading && !hasSearched && (
         <Card>
-          <Search className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-          <p className="text-lg mb-2">Search for recipes</p>
-          <p className="text-sm">
+          <Search className="h-12 w-12 mx-auto mb-4" style={{ color: "var(--text-muted)" }} />
+          <p className="text-subheading mb-2">Search for recipes</p>
+          <p className="text-small">
             Enter a recipe name and click the search icon or press Enter
           </p>
         </Card>

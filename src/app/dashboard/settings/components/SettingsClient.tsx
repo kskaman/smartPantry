@@ -17,7 +17,7 @@ export function SettingsClient({ user }: SettingsClientProps) {
       <Card>
         <div className="flex flex-col gap-4">
           <h2 
-            className="text-lg font-semibold"
+            className="text-subheading"
             style={{ color: 'var(--text-title)' }}
           >
             Account Information
@@ -33,7 +33,7 @@ export function SettingsClient({ user }: SettingsClientProps) {
                 placeholder="Your name"
               />
               <p 
-                className="text-xs"
+                className="text-caption"
                 style={{ color: 'var(--text-tertiary)' }}
               >
                 Managed by your Google account
@@ -49,7 +49,7 @@ export function SettingsClient({ user }: SettingsClientProps) {
                 placeholder="Your email"
               />
               <p 
-                className="text-xs"
+                className="text-caption"
                 style={{ color: 'var(--text-tertiary)' }}
               >
                 Managed by your Google account

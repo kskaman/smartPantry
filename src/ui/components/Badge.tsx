@@ -18,24 +18,32 @@ export default function Badge({
   variant = "default",
   className,
 }: BadgeProps) {
+  const getVariantStyles = () => {
+    switch (variant) {
+      case "destructive":
+        return { backgroundColor: "#fee2e2", color: "var(--text-danger)" };
+      case "secondary":
+        return { backgroundColor: "#dbeafe", color: "var(--text-info)" };
+      case "warning":
+        return { backgroundColor: "#fef3c7", color: "var(--text-warning)" };
+      case "outline":
+        return {
+          backgroundColor: "transparent",
+          border: "1px solid var(--text-tertiary)",
+          color: "var(--text-main)",
+        };
+      default:
+        return { backgroundColor: "#f3f4f6", color: "var(--text-main)" };
+    }
+  };
+
   return (
     <span
       className={clsx(
-        "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium",
-        {
-          "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100":
-            variant === "default",
-          "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200":
-            variant === "destructive",
-          "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200":
-            variant === "secondary",
-          "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200":
-            variant === "warning",
-          "border border-gray-300 text-gray-700 dark:border-gray-600 dark:text-gray-300":
-            variant === "outline",
-        },
+        "inline-flex items-center px-2.5 py-0.5 rounded-full text-caption",
         className
       )}
+      style={getVariantStyles()}
     >
       {children}
     </span>
