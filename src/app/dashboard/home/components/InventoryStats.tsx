@@ -109,7 +109,7 @@ export function InventoryStats() {
             </p>
 
             <p
-              className="text-xs sm:text-sm"
+              className="text-caption"
               style={{ color: "var(--text-tertiary)" }}
             >
               {isLoading
@@ -148,7 +148,7 @@ export function InventoryStats() {
             </p>
 
             <p
-              className="text-xs sm:text-sm"
+              className="text-caption"
               style={{ color: "var(--text-tertiary)" }}
             >
               {isLoading
@@ -187,7 +187,7 @@ export function InventoryStats() {
             </p>
 
             <p
-              className="text-xs sm:text-sm"
+              className="text-caption"
               style={{ color: "var(--text-tertiary)" }}
             >
               {isLoading

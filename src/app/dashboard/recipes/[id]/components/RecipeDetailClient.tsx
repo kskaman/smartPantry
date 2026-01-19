@@ -2,10 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  useRecipeDetail,
-  useToggleSaveRecipe,
-} from "@/hooks/use-recipes";
+import { useRecipeDetail, useToggleSaveRecipe } from "@/hooks/use-recipes";
 import {
   ArrowLeft,
   ExternalLink,
@@ -181,11 +178,11 @@ export function RecipeDetailClient({ recipeId }: RecipeDetailClientProps) {
 
           {/* Category, Area, and Tags */}
           <div className="flex flex-wrap gap-2">
-            <Badge className="bg-orange-100 text-orange-800">
+            <Badge className="text-(--text-warning) bg-[#fef3c7]">
               <ChefHat className="h-3" />
               {recipe.strCategory}
             </Badge>
-            <Badge className="bg-blue-100 text-blue-800">
+            <Badge className="bg-(--text-info) bg-[#dbeafe]">
               <Globe className="h-3 w-3 mr-1" />
               {recipe.strArea}
             </Badge>
@@ -203,7 +200,7 @@ export function RecipeDetailClient({ recipeId }: RecipeDetailClientProps) {
                   href={recipe.strSource}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800 transition-colors"
+                  className="inline-flex items-center text-small transition-colors text-(--text-info)"
                 >
                   <ExternalLink className="h-4 w-4 mr-1" />
                   View Source
@@ -265,9 +262,12 @@ export function RecipeDetailClient({ recipeId }: RecipeDetailClientProps) {
                       .map((step, index) => (
                         <p
                           key={index}
-                          className="mb-4 text-base leading-relaxed"
+                          className="mb-4 text-body leading-relaxed"
                         >
-                          <span className="text-semibold text-orange-500">
+                          <span
+                            className="font-semibold text-(--text-warning)"
+                            style={{ color: "var(--text-warning)" }}
+                          >
                             {index + 1}.{" "}
                           </span>
                           {step}
