@@ -3,6 +3,7 @@ import { Geist } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/ui/components";
 import { QueryProvider } from "@/providers/query-provider";
+import InstallPWA from "@/components/InstallPWA";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -10,7 +11,7 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Eden - Food Inventory Manager",
+  title: "Beta - Food Inventory Manager",
   description: "Track your pantry, reduce waste, cook what you have",
   manifest: "/manifest.json",
   appleWebApp: {
@@ -39,12 +40,13 @@ export default function RootLayout({
     >
       <head>
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
-        <meta name="theme-color" content="#10b981" />
+        <meta name="theme-color" content="#e8f0ef" />
       </head>
-      <body className={`antialiased`}>
+      <body suppressHydrationWarning={true} className={`antialiased`}>
         <QueryProvider>
           {children}
           <Toaster />
+          <InstallPWA />
         </QueryProvider>
       </body>
     </html>
