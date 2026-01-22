@@ -57,7 +57,7 @@
   "handle_links": "preferred",
   "url_handlers": [
     {
-      "origin": "https://*.vercel.app"
-    }
+    "origin": "https://eden-copy-pwa.vercel.app"
+  }
   ]
 }
