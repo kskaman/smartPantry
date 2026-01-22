@@ -1,15 +1,8 @@
-import { redirect } from "next/navigation";
-import { createServerClient } from "@/lib/supabase/server";
+import LandingPage from "./landing/page";
 
-export default async function HomePage() {
-  const supabase = await createServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (user) {
-    redirect("/dashboard/home");
-  } else {
-    redirect("/auth/signin");
-  }
+// The main entry point now shows the landing page
+// which handles PWA install prompts, "open in app" prompts,
+// and redirects appropriately based on installation status
+export default function HomePage() {
+  return <LandingPage />;
 }
