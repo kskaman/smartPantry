@@ -5,7 +5,7 @@ import { Item } from "@/types";
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { error: authError } = await getApiUser();
@@ -24,10 +24,10 @@ export async function PATCH(
       .select()
       .single();
 
-    if (error) 
+    if (error) {
       return NextResponse.json(
         { error: "Failed to update item" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -37,14 +37,14 @@ export async function PATCH(
   } catch {
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { error: authError } = await getApiUser();
@@ -60,7 +60,7 @@ export async function DELETE(
     if (error) {
       return NextResponse.json(
         { error: error.message || "Failed to delete item" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -68,7 +68,7 @@ export async function DELETE(
   } catch {
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
