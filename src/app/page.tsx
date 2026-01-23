@@ -1,8 +1,12 @@
-import LandingPage from "./landing/page";
+import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/auth";
 
-// The main entry point now shows the landing page
-// which handles PWA install prompts, "open in app" prompts,
-// and redirects appropriately based on installation status
-export default function HomePage() {
-  return <LandingPage />;
+export default async function HomePage() {
+  const user = await getCurrentUser();
+  
+  if (user) {
+    redirect("/dashboard/home");
+  }
+  
+  redirect("/auth/signin");
 }

@@ -30,7 +30,7 @@ interface PWAStatus {
   isInBrowser: boolean;
 }
 
-const INSTALL_KEY = "pwa-installed";
+const INSTALL_KEY = "beta-pwa-installed";
 
 // Helper functions for SSR-safe checks
 function getIsStandalone(): boolean {
@@ -44,7 +44,10 @@ function getIsStandalone(): boolean {
 function getIsIOS(): boolean {
   if (typeof window === "undefined") return false;
   const ua = window.navigator.userAgent;
-  return /iPad|iPhone|iPod/.test(ua) && !(window as unknown as { MSStream?: unknown }).MSStream;
+  return (
+    /iPad|iPhone|iPod/.test(ua) &&
+    !(window as unknown as { MSStream?: unknown }).MSStream
+  );
 }
 
 function getIsInstalled(): boolean {
@@ -64,17 +67,19 @@ function getServerSnapshot(): boolean {
 }
 
 export function usePWAStatus(): PWAStatus {
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
-  
+  const [deferredPrompt, setDeferredPrompt] =
+    useState<BeforeInstallPromptEvent | null>(null);
+
   // Use useSyncExternalStore for localStorage to avoid hydration issues
   const isInstalled = useSyncExternalStore(
     subscribeToStorage,
     getIsInstalled,
-    getServerSnapshot
+    getServerSnapshot,
   );
 
   // These are computed values
-  const isStandalone = typeof window !== "undefined" ? getIsStandalone() : false;
+  const isStandalone =
+    typeof window !== "undefined" ? getIsStandalone() : false;
   const isIOS = typeof window !== "undefined" ? getIsIOS() : false;
   const isInBrowser = typeof window !== "undefined" && !isStandalone;
 
@@ -115,17 +120,17 @@ export function usePWAStatus(): PWAStatus {
   // Trigger the install prompt
   const promptInstall = useCallback(async (): Promise<boolean> => {
     if (!deferredPrompt) return false;
-    
+
     await deferredPrompt.prompt();
     const choice = await deferredPrompt.userChoice;
-    
+
     if (choice.outcome === "accepted") {
       localStorage.setItem(INSTALL_KEY, "true");
       window.dispatchEvent(new Event("storage"));
       setDeferredPrompt(null);
       return true;
     }
-    
+
     return false;
   }, [deferredPrompt]);
 
@@ -154,6 +159,9 @@ export function getAppOpenURL(): string {
 }
 
 // Check if we should show "Open in App" prompt
-export function shouldShowOpenInApp(isInstalled: boolean, isInBrowser: boolean): boolean {
+export function shouldShowOpenInApp(
+  isInstalled: boolean,
+  isInBrowser: boolean,
+): boolean {
   return isInstalled && isInBrowser;
 }
