@@ -12,9 +12,9 @@ export function AddItemsSection() {
   return (
     <>
       <div className="flex gap-4 flex-row">
-        <Button variant="primary" onClick={() => setIsScanModalOpen(true)}>
+        {/* <Button variant="primary" onClick={() => setIsScanModalOpen(true)}>
           Scan Receipt
-        </Button>
+        </Button> */}
         <Button variant="primary" onClick={() => setIsModalOpen(true)}>
           Add Item
         </Button>
