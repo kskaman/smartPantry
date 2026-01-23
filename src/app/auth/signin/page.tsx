@@ -1,19 +1,17 @@
 import { SignInButton } from "@/app/components/SignInButton";
-import InstallPWA from "./InstallPWA";
+import InstallPWA from "../../components/InstallPWA";
 
 export default function SignInPage() {
   return (
     <div className="main-page">
-      <div className="w-full max-w-md -mt-12 flex items-center gap-4 justify-center items-center flex-col">
+      <div className="w-full max-w-md flex items-center gap-4 justify-center items-center flex-col">
         <div className="text-center">
           <p className="text-body" style={{ color: "var(--text-muted)" }}>
             Track your pantry, reduce waste, cook what you have
           </p>
         </div>
-
-        <SignInButton />
-
         <InstallPWA />
+        <SignInButton />
       </div>
     </div>
   );

@@ -38,7 +38,6 @@ export async function GET(
       .single();
 
     const isSaved = !!savedRecipes;
-    console.log(`Recipe ID ${id} isSaved:`, isSaved);
     return NextResponse.json({ ...meal, isSaved });
   } catch {
     return NextResponse.json(

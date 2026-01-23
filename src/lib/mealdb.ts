@@ -58,7 +58,6 @@ export async function getMealById(mealId: string): Promise<MealDBMeal | null> {
 
     return data.meals?.[0] || null;
   } catch (error) {
-    console.error("Error fetching meal details:", error);
     throw error;
   }
 }

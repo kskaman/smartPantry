@@ -366,12 +366,12 @@ const generateSeedItems = () => {
       (/water|juice|oil|soda|milk|cream/i.test(name)
         ? "litres"
         : /rice|pasta|beef|chicken|salmon|shrimp|bacon|sausage|ham|turkey|flour|sugar|beans|lentils/i.test(
-            name
-          )
-        ? "kilograms"
-        : /coffee|tea|honey|peanut|spice|herb|nut|chocolate/i.test(name)
-        ? "grams"
-        : "pieces");
+              name,
+            )
+          ? "kilograms"
+          : /coffee|tea|honey|peanut|spice|herb|nut|chocolate/i.test(name)
+            ? "grams"
+            : "pieces");
 
     // sensible quantities based on unit
     let quantity = 1;
@@ -423,10 +423,9 @@ export async function POST() {
       .select();
 
     if (error) {
-      console.error("Seed error:", error);
       return NextResponse.json(
         { error: "Failed to seed items", details: error.message },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -436,10 +435,9 @@ export async function POST() {
       items: data,
     });
   } catch (error) {
-    console.error("Seed error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -24,8 +24,7 @@ export async function PATCH(
       .select()
       .single();
 
-    if (error) {
-      console.error("Supabase error:", error);
+    if (error) 
       return NextResponse.json(
         { error: "Failed to update item" },
         { status: 500 }

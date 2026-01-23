@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     if (!body.name || !body.quantity || !body.expiry_date) {
       return NextResponse.json(
         { error: "Missing required data" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -28,10 +28,9 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (error) {
-      console.log("Item POST error:", error);
       return NextResponse.json(
         { error: "Failed to create item" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -41,7 +40,7 @@ export async function POST(request: NextRequest) {
   } catch {
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -89,26 +88,29 @@ export async function GET(request: NextRequest) {
       today.setHours(0, 0, 0, 0);
       const sevenDaysLater = new Date(today);
       sevenDaysLater.setDate(sevenDaysLater.getDate() + 7);
-      query = query.or(`expiry_date.gte.${sevenDaysLater.toISOString()},expiry_date.is.null`);
+      query = query.or(
+        `expiry_date.gte.${sevenDaysLater.toISOString()},expiry_date.is.null`,
+      );
     }
 
     const { data, error } = await query;
 
     if (error) {
-      console.error("Supabase error:", error);
       return NextResponse.json(
         { error: error.message || "Failed to fetch items" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
     // Strip timestamps and user_id before returning to frontend
-    const items = (data || []).map(({ created_at, updated_at, user_id, ...item }) => item);
+    const items = (data || []).map(
+      ({ created_at, updated_at, user_id, ...item }) => item,
+    );
     return NextResponse.json(items);
   } catch {
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -29,29 +29,25 @@ export default function InstallPWA() {
     <>
       {/* Android / Chrome install button */}
       {showAndroidInstall && (
-        <div className="w-full max-w-xs space-y-3">
-          <Button
-            variant="primary"
-            onClick={handleInstall}
-            maxWidth="200px"
-            icon={<Download className="h-5 w-5" />}
-          >
-            Install App
-          </Button>
-        </div>
+        <Button
+          variant="primary"
+          onClick={handleInstall}
+          maxWidth="250px"
+          icon={<Download className="h-5 w-5" />}
+        >
+          Install App
+        </Button>
       )}
 
       {/* iOS install instructions trigger */}
       {showIOSInstall && (
-        <div className="w-full max-w-xs space-y-3">
-          <Button
-            variant="primary"
-            onClick={() => setShowIOSModal(true)}
-            maxWidth="200px"
-          >
-            Install instructions (iOS)
-          </Button>
-        </div>
+        <Button
+          variant="primary"
+          onClick={() => setShowIOSModal(true)}
+          maxWidth="250px"
+        >
+          Install instructions (iOS)
+        </Button>
       )}
 
       {/* iOS modal */}
