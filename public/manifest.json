@@ -2,7 +2,7 @@
   "name": "Beta - Household Food Inventory Manager",
   "short_name": "Beta",
   "description": "Track your pantry, reduce waste, and discover recipes with what you have",
-  "start_url": "/dashboard/home",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
