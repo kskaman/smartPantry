@@ -67,17 +67,13 @@ export default function InstallPWA() {
 
             <div className="space-y-3 text-body">
               <p>
-                1. Open this page in <strong>Safari</strong>
-              </p>
-
-              <p>
-                2. Tap the{" "}
+                1. Tap the{" "}
                 <Share className="inline h-4 w-4 text-blue-500 mx-1" />{" "}
                 <strong>Share</strong> button
               </p>
 
               <p>
-                3. Tap <strong>&quot;Add to Home Screen&quot;</strong>
+                2. Tap <strong>&quot;Add to Home Screen&quot;</strong>
               </p>
 
               <p className="text-sm opacity-70">
