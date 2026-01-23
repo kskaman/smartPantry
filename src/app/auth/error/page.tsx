@@ -8,7 +8,7 @@ export default function AuthErrorPage() {
   const router = useRouter();
 
   return (
-    <div className="main-page min-h-0">
+    <div className="main-page">
       <div className="w-full max-w-md flex items-center justify-center flex-col gap-6">
         <div className="w-16 h-16 rounded-full bg-(--warning-color)/10 flex items-center justify-center">
           <AlertCircle className="w-8 h-8 text-(--warning-color)" />

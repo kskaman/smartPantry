@@ -1,10 +1,10 @@
 /* This file contains styles related to pages */
 .main-page {
-  height: 100dvh; /* Dynamic viewport height for mobile browsers */
+  min-height: 100dvh;
+  height: 100vh; /* Dynamic viewport height for mobile browsers */
   width: 100%;
   background-color: var(--main-page-bg);
   display: flex;
-  align-items: center;
   justify-content: center;
   padding: 1rem;
   overflow: auto; /* Prevent scroll */
