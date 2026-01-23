@@ -6,14 +6,21 @@ export async function proxy(req: NextRequest) {
 
   // Allow auth endpoints and public routes
   if (
-    pathname.startsWith("/api/auth") ||
+    pathname === "/" ||
     pathname.startsWith("/auth") ||
-    pathname === "/favicon.ico" ||
+    pathname.startsWith("/api/auth") ||
     pathname.startsWith("/_next") ||
-    pathname.startsWith("/public") ||
-    pathname.startsWith("/manifest.json") ||
+    pathname === "/favicon.ico" ||
+    pathname === "/manifest.json" ||
+    pathname === "/service-worker.js" || // if you use this path
     pathname.startsWith("/icons/")
   ) {
+    return NextResponse.next();
+  }
+
+  // Only protect dashboard routes (adjust if you have more protected areas)
+  const isDashboard = pathname.startsWith("/dashboard");
+  if (!isDashboard) {
     return NextResponse.next();
   }
 
@@ -31,17 +38,17 @@ export async function proxy(req: NextRequest) {
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) =>
-            req.cookies.set(name, value)
+            req.cookies.set(name, value),
           );
           supabaseResponse = NextResponse.next({
             request: req,
           });
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
+            supabaseResponse.cookies.set(name, value, options),
           );
         },
       },
-    }
+    },
   );
 
   // Refresh session if expired
