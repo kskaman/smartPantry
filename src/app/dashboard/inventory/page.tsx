@@ -13,16 +13,15 @@ export default function InventoryPage() {
   const [filter, setFilter] = useState<FilterOption>("fresh");
   const debouncedSearch = useDebounce(search, 1000);
 
-  const { items, isLoading } = useItems(
-    debouncedSearch,
-    filter
-  );
+  const { items, isLoading } = useItems(debouncedSearch, filter);
   const { deleteMultipleItems } = useItemMutations();
 
   const handleBulkDeleteExpired = async () => {
     if (items.length === 0) return;
 
-    const itemIds = items.map((item) => item.id).filter((id): id is string => !!id);
+    const itemIds = items
+      .map((item) => item.id)
+      .filter((id): id is string => !!id);
     if (itemIds.length === 0) return;
     await deleteMultipleItems.mutateAsync(itemIds);
   };
@@ -46,7 +45,7 @@ export default function InventoryPage() {
   );
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-5 mb-5">
       <div className="space-y-2">
         <h1 className="text-title">Inventory</h1>
         <p className="text-small">Track expired and expiring items</p>
@@ -60,7 +59,12 @@ export default function InventoryPage() {
             onChange={(e) => setSearch(e.target.value)}
             value={search}
             placeholder="Search items"
-            startIcon={<Search className="h-4 w-4" style={{ color: "var(--text-muted)" }} />}
+            startIcon={
+              <Search
+                className="h-4 w-4"
+                style={{ color: "var(--text-muted)" }}
+              />
+            }
           />
         </div>
 
