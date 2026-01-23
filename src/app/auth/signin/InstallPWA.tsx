@@ -45,7 +45,7 @@ export default function InstallPWA() {
       {showIOSInstall && (
         <div className="w-full max-w-xs space-y-3">
           <Button
-            variant="secondary"
+            variant="primary"
             onClick={() => setShowIOSModal(true)}
             maxWidth="200px"
           >
