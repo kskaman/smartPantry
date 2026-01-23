@@ -1,9 +1,18 @@
 /* This file contains styles related to pages */
 .main-page {
-  min-height: 100vh;
+  height: 100dvh; /* Dynamic viewport height for mobile browsers */
   width: 100%;
   background-color: var(--main-page-bg);
   display: flex;
+  align-items: center;
   justify-content: center;
-  padding: 2rem; /* mobile safe padding */
+  padding: 1rem;
+  overflow: auto; /* Prevent scroll */
+}
+
+/* For mobile devices - ensure proper spacing */
+@media (max-width: 768px) {
+  .main-page {
+    padding: 1rem 1rem 2rem;
+  }
 }
